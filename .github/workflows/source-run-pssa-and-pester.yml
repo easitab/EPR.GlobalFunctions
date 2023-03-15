@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
     - 'source/**'
+  workflow_dispatch:
 
 jobs:
   lint:
