@@ -2,23 +2,30 @@ BeforeAll {
     $testFilePath = $PSCommandPath.Replace('.Tests.ps1','.ps1')
     $codeFileName = Split-Path -Path $testFilePath -Leaf
     $commandName = ((Split-Path -Leaf $PSCommandPath) -replace '.ps1','') -replace '.Tests', ''
-    $testRoot = Split-Path -Path $PSCommandPath -Parent
-    $testDataRoot = Join-Path $testRoot -ChildPath 'data'
+    $testFunctionRoot = Split-Path -Path $PSCommandPath -Parent
+    $testRoot = Split-Path -Path $testFunctionRoot -Parent
+    $testDataRoot = Join-Path -Path "$testRoot" -ChildPath "data"
     $projectRoot = Split-Path -Path $testRoot -Parent
     $sourceRoot = Join-Path -Path "$projectRoot" -ChildPath "source"
     $codeFile = Get-ChildItem -Path "$sourceRoot" -Include "$codeFileName" -Recurse
+    function Write-CustomLog {
+        [CmdletBinding()]
+        Param (
+            [Parameter(ValueFromPipeline,ParameterSetName='string')]
+            [string]$Message,
+            [Parameter(ValueFromPipeline,ParameterSetName='object')]
+            [object]$InputObject,
+            [Parameter()]
+            [string]$Level
+        )
+    }
     if (Test-Path $codeFile) {
         . $codeFile
     } else {
         Write-Output "Unable to locate code file ($codeFileName) to test against!" -ForegroundColor Red
     }
-    try {
-        $settings = Get-SettingsFromFile -Filename 'globalSettings.json' -Path $testDataRoot
-    } catch {
-        throw $_
-    }
 }
-Describe "$commandName" -Tag 'function' {
+Describe "Get-SettingsFromFile" -Tag 'function' {
     It 'should have a parameter named Filename' {
         Get-Command "$commandName" | Should -HaveParameter Filename
     }
@@ -38,6 +45,6 @@ Describe "$commandName" -Tag 'function' {
         Get-Command "$commandName" | Should -HaveParameter Path -Type String
     }
     It 'should return a PSCustomObjec' {
-        $settings | Should -BeOfType PSCustomObject
+        Get-SettingsFromFile -Filename 'Get-SettingsFromFile' -Path $testDataRoot | Should -BeOfType PSCustomObject
     }
 }
