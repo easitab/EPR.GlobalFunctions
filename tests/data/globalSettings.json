@@ -1,0 +1,16 @@
+{
+    "global":{
+        "setting1":"globalValue1",
+        "setting2":"globalValueDetermined by template"
+    },
+    "templateScript":{
+        "setting2" : "__globalValue__",
+        "setting3" : "scriptValue3",
+        "LogOutputLevel": "VERBOSE"
+    },
+    "Get-SettingsFromFile":{
+        "setting2" : "__globalValue__",
+        "setting3" : "scriptValue3",
+        "LogOutputLevel": "VERBOSE"
+    }
+}
