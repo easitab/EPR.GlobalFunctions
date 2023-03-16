@@ -1,17 +1,18 @@
-# This is a basic workflow to help you get started with Actions
+name: Release notes
 
-name: CI
-
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "develop" branch
-  pull_request:
-    branches: [ "develop" ]
+  push:
+    branches:
+      - 'develop'
+    paths-ignore:
+    - '.github/**'
+    - 'workflows/**'
+  workflow_dispatch:
 
 jobs:
   update_release_draft:
     name: update_release_draft
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: generate_release_draft
         uses: release-drafter/release-drafter@v5
