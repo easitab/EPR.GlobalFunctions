@@ -504,8 +504,10 @@ function New-EPRInstallation {
     }
     if ($SendInstallationDetailsToEasit -and $body) {
         try {
-            $password = ConvertTo-SecureString "$($installerSettings.FeedbackSettings.apikey)" -AsPlainText -Force
-            $credentials = New-Object System.Management.Automation.PSCredential ("$($installerSettings.FeedbackSettings.apikey)", $password)
+            $pair = "$($installerSettings.FeedbackSettings.apikey): "
+            $encodedCreds = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes($pair))
+            $basicAuthValue = "Basic $encodedCreds"
+            $headers = @{SOAPAction = ""; Authorization = $basicAuthValue }
         } catch {
             Write-EPRInstallLog -InputObject $_ -Level VERBOSE @loggingParameters
         }
@@ -513,12 +515,11 @@ function New-EPRInstallation {
             $restParams = @{
                 Method = 'POST'
                 Uri = $installerSettings.FeedbackSettings.url
-                Authentication = 'Basic'
-                Credential = $credentials
                 Body = $body
                 TimeoutSec = 30
                 ErrorAction = 'Stop'
                 ContentType = "application/json"
+                Headers = $headers
             }
             $null = Invoke-RestMethod @restParams
             $wassenttoeasit = "These details was sent to Easit"
