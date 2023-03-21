@@ -1,11 +1,8 @@
 function Write-CustomLog {
     <#
     .SYNOPSIS
-
         Writes input to file and a output stream.
-
     .DESCRIPTION
-
         This function provide the option to log output and / or progress in scripts.
         While there are functions like *Start-Transcript* and *Out-File*, *Write-CustomLog* also
         handles log rotation and naming of log history.
@@ -23,63 +20,39 @@ function Write-CustomLog {
         If no input is provided for *-LogDirectory*, logs will be written to $pwd.
         
         If no input is provided for *-RotationInterval*, 30 will used as value.
-
     .PARAMETER Message
-
         String that will be written to file and stream.
-
     .PARAMETER InputObject
-
         The object that will be written to file and stream.
-
     .PARAMETER Level
-
         What stream should the input be redirected to.
-
     .PARAMETER OutputLevel
-
         What level of input should be written to file and stream.
-
     .PARAMETER LogName
-
         Name of logfile.
-
     .PARAMETER LogDirectory
-
         In what directory should logs be saved.
-
     .PARAMETER RotationInterval
-
         For how many days should logs be kept on disk.
-
     .PARAMETER Rotate
-
         Tells the function to rotate logs. If this is always included with *Write-CustomLog* it will always try to rotate logs each time *Write-CustomLog* is invoked.
-
     .EXAMPLE
-
         Write-CustomLog -Message "Staring script"
 
         In this example we write the string *Starting script* as a log entry with the level of INFO.
         It will also use Write-Information to output it to the correct stream.
-
     .EXAMPLE
-
         Write-CustomLog -InputObject $_ -Level ERROR
 
         In this example we write the current objekt to as a log entry with the level of ERROR.
         It will also use Write-Error to output it to the correct stream.
-
     .EXAMPLE
-
         Write-CustomLog -Message "Rotating logs" -Level VERBOSE -Rotate
 
         In this example we write the string *Starting script* as a log entry with the level of INFO.
         It will also use Write-Information to output it to the correct stream.
         Since we specify *-Rotate* the function will try to remove files older than set by *RotationInterval*.
-
     .EXAMPLE
-
         Write-CustomLog -Message "Starting script and rotating logs" -Rotate
         Write-CustomLog -Message "Trying something" -Level VERBOSE
         try {
@@ -91,13 +64,12 @@ function Write-CustomLog {
         Write-CustomLog -Message "Script end"
 
         Basic *real world* example of how to use *Write-CustomLog* in a script.
-    
     .INPUTS
         [string]
 
         [object]
-
     .OUTPUTS
+        None. This cmdlet returns no output.
     #>
 	[CmdletBinding()]
 	Param (

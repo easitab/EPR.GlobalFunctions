@@ -1,11 +1,8 @@
 function Get-SettingsFromFile {
     <#
     .SYNOPSIS
-
         Get settings for script
-
     .DESCRIPTION
-
         The *Get-SettingsFromFile* function looks for a file named *globalSettings.json*, a file named *scriptName.json* and for a object in *globalSettings.json* with same name as the scriptfile invoking the function and returns a PSCustomObject with the combined settings.
 
         If the same setting is found in multiple places the following priority is used:
@@ -15,27 +12,17 @@ function Get-SettingsFromFile {
         3. Global object in *globalSettings.json*.
 
         Before returning the PSCustomObject all settings values are matched against the string '__globalValue__'. If there is a match the value for the global settings with the same name will be used.
-    
     .PARAMETER Filename
-
         Name of file containing script specific settings.
-
     .PARAMETER Path
-
         Path to directory where settings files are located.
-    
     .EXAMPLE
-
         PS> Get-SettingsFromFile
 
         In this example we are using the function in a scriptfile named testService.ps1. All settings from 'testService.json' (if exist) and the testService object in 'globalSettings' will be added to the returning PSCustomObject.
-    
     .INPUTS
-
         None. You cannot pipe objects to Get-SettingsFromFile.
-
     .OUTPUTS
-
         [PSCustomObject]
     #>
     [CmdletBinding()]
