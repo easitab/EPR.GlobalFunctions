@@ -1,11 +1,8 @@
 function Convert-OUString {
     <#
     .SYNOPSIS
-
         Converts a DN string to a PSCustomObject or hashtable.
-
     .DESCRIPTION
-
         The *Convert-OUString* function takes a string and splits it according to the specification of an LDAP DN as contained in RFC 4514.
         Each RDN (name-value pair) is added to the returning object with nameNumber as name and value as the value.
 
@@ -18,17 +15,11 @@ function Convert-OUString {
         - OUPath : ou=People,dc=example,dc=com
 
         The *Convert-OUString* function also adds a property named 'OUPath' with the full DN up to the last (when reading from right to left) RDN.
-    
     .PARAMETER OUString
-
         String to convert
-
     .PARAMETER AsPSCustomObject
-
         Tells the function to return a PSCustomObject instead of a hashtable
-    
     .EXAMPLE
-
         PS> Convert-OUString -OUString "uid=john.doe,ou=People,dc=example,dc=com"
         Name                           Value
         ----                           -----
@@ -39,9 +30,7 @@ function Convert-OUString {
         uid1                           john.doe
 
         In this example we are converting a DN to a hashtable.
-
     .EXAMPLE
-
         PS> Convert-OUString -OUString "uid=john.doe,ou=People,dc=example,dc=com" -AsPSCustomObject
         OUPath : ou=People,dc=example,dc=com
         dc1    : com
@@ -50,13 +39,9 @@ function Convert-OUString {
         uid1   : john.doe
         
         In this example we are converting a DN to a PSCustomObject.
-    
     .INPUTS
-
         None. You cannot pipe objects to Convert-OUString.
-
     .OUTPUTS
-
         [PSCustomObject]
 
         [hashtable]
