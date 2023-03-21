@@ -504,7 +504,7 @@ function New-EPRInstallation {
     }
     if ($SendInstallationDetailsToEasit -and $body) {
         try {
-            $password = ConvertTo-SecureString "dummy" -AsPlainText -Force
+            $password = ConvertTo-SecureString "$($installerSettings.FeedbackSettings.apikey)" -AsPlainText -Force
             $credentials = New-Object System.Management.Automation.PSCredential ("$($installerSettings.FeedbackSettings.apikey)", $password)
         } catch {
             Write-EPRInstallLog -InputObject $_ -Level VERBOSE @loggingParameters
