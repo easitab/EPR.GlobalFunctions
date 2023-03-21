@@ -1,8 +1,8 @@
 function Write-EPRInstallLog {
     <#
-    .Synopsis
+    .SYNOPSIS
         Easit custom Powershell logger.
-    .Description
+    .DESCRIPTION
         Easit custom Powershell logger works similar to log4j that is used with Java applications.
 
         Two different logging techniques are used depending on the input:
@@ -22,6 +22,8 @@ function Write-EPRInstallLog {
         Directory to write log file in.
     .PARAMETER LogLevel
         What level the logger should output entries on.
+    .OUTPUTS
+        None. This cmdlet returns no output.
     #>
     [CmdletBinding()]
     Param (

@@ -1,22 +1,36 @@
 function New-EPRInstallation {
     <#
-    .Synopsis
-        Script to install Easit Process Runner.
-
-    .Description
-        Script to be used to install a new instance of Easit Process Runner.
-
+    .SYNOPSIS
+        Function for installing Easit Process Runner.
+    .DESCRIPTION
+        Function for installing a new instance of Easit Process Runner.
+        This function will first look for settings in *.\lib\installerSettings.json* relative to path provided as *FromDirectory*.
+        The settings in this file will be replaced in memory with any input provided with *InstallLocation*, *SystemName*, *Port* and *TomcatXmx*.
+        Settings provided via a parameter will be used over settings in *installerSettings.json*
+    .PARAMETER CustomerID
+        ID from Easit AB representing the customer.
+    .PARAMETER FromDirectory
+        Path to the directory of expanded install archive containing the directories 'archives' and 'lib'.
     .PARAMETER InstallLocation
-
+        Path to where EPR should be installed.
+    .PARAMETER SystemName
+        The input for SystemName will be combined with 'EPR-'. This will then be used to name the Tomcat service and *SystemRoot*.
+    .PARAMETER Port
+        Specifies the port EPR will listen on for incomming requests.
+    .PARAMETER TomcatXmx
+        Specifies how mush memory the Tomcat service will able to use.
+    .PARAMETER IgnoreDirectoryStructure
+        Specifies if the installer should add 'Easit' or not to the *InstallLocation*.
+        With *IgnoreDirectoryStructure* omitted: D:\Easit\EPR-[SystemName]
+        With *IgnoreDirectoryStructure* provided: D:\EPR-[SystemName]
+    .PARAMETER DoNotSendInstallationDetailsToEasit
+        Specifies if the installer should NOT try to send server and installations details to Easit upon completed installation.
     .EXAMPLE
         PS> New-EPRInstallation -CustomerID 12345 -FromDirectory '.\EPRInstaller-1.0.0'
-
     .EXAMPLE
         PS> New-EPRInstallation -CustomerID 12345 -FromDirectory '.\EPRInstaller-1.0.0' -InstallLocation 'E:\'
-    
     .EXAMPLE
         PS> New-EPRInstallation -CustomerID 12345 -FromDirectory '.\EPRInstaller-1.0.0' -InstallLocation 'F:\' -Port 9005
-
     #>
     [CmdletBinding()]
     param (
@@ -35,9 +49,7 @@ function New-EPRInstallation {
         [Parameter()]
         [Switch]$IgnoreDirectoryStructure,
         [Parameter()]
-        [Switch]$DoNotSendInstallationDetailsToEasit,
-        [Parameter()]
-        [Switch]$UseSettingsFromFile
+        [Switch]$DoNotSendInstallationDetailsToEasit
     )
     
     begin {
