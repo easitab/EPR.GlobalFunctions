@@ -502,7 +502,10 @@ function New-EPRInstallation {
     } catch {
         Write-EPRInstallLog -InputObject $_ -Level VERBOSE @loggingParameters
     }
-    if ($SendInstallationDetailsToEasit -and $body) {
+    if (!($null = $SendInstallationDetailsToEasit)) {
+        $installerSettings.Parameters.SendInstallationDetailsToEasit = "$SendInstallationDetailsToEasit"
+    }
+    if (($installerSettings.Parameters.SendInstallationDetailsToEasit -eq 'True') -and $body) {
         try {
             $pair = "$($installerSettings.FeedbackSettings.apikey): "
             $encodedCreds = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes($pair))
