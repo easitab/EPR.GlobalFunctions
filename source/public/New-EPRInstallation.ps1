@@ -65,11 +65,11 @@ function New-EPRInstallation {
             Write-Host "such as SystemRootDirectory, TomcatRootDirectory, TomcatVersion, JavaVersion, ServiceName. If you DO NOT want" -ForegroundColor DarkGreen
             Write-Host "to send this information to Easit, please enter 'n' or 'false' below and press enter. Otherwise, just press enter." -ForegroundColor DarkGreen
             $promptInput = Read-Host -Prompt "SendDetailsToEasit"
-        }
-        if ([string]::IsNullOrEmpty($promptInput) -or $null -eq $promptInput) {
-            $SendInstallationDetailsToEasit = $true
-        } else {
-            $SendInstallationDetailsToEasit = $false
+            if ([string]::IsNullOrEmpty($promptInput) -or $null -eq $promptInput) {
+                $SendInstallationDetailsToEasit = $true
+            } else {
+                $SendInstallationDetailsToEasit = $false
+            }
         }
         try {
             $installPackagePath = Resolve-Path $FromDirectory -ErrorAction Stop
