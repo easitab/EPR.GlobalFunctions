@@ -407,6 +407,41 @@ function New-EPRInstallation {
         }
     }
     #endregion
+    #region configFilesToReplacepwshExecutableIn
+    foreach ($configFilesToReplacepwshExecutableIn in $installerSettings.configFilesToReplacepwshExecutableIn) {
+        try {
+            $file = Get-ChildItem -Path "$systemConfigRoot" -Recurse -Include "$configFilesToReplacepwshExecutableIn"
+        } catch {
+            Write-EPRInstallLog -InputObject $_ -Level ERROR @loggingParameters
+            return
+        }
+        try {
+            $fileContent = Get-Content -Path $file.FullName -Raw
+        } catch {
+            Write-EPRInstallLog -InputObject $_ -Level ERROR @loggingParameters
+            return
+        }
+        $pwshExecutable = $null
+        $pwshExecutable = ((Get-Variable pwsh).value).FullName
+        "pwshExecutable = $pwshExecutable"
+        if (!($pwshExecutable)) {
+            Write-EPRInstallLog -Message "Unable to find pwsh.exe" -Level WARN @loggingParameters
+        } else {
+            $pwshExecutable = $pwshExecutable -replace '\\','/'
+            try {
+                $fileContent = $fileContent -replace '\$\{pwshExecutable\}',"$pwshExecutable"
+            } catch {
+                Write-EPRInstallLog -Message "Unable to update SystemPort in $File" -Level WARN @loggingParameters
+                Write-EPRInstallLog -InputObject $_ -Level VERBOSE @loggingParameters
+            }
+            try {
+                $fileContent | Set-Content -Path $file.FullName
+            } catch {
+                Write-EPRInstallLog -Message "Unable to set content of $File" -Level WARN @loggingParameters
+                Write-EPRInstallLog -InputObject $_ -Level VERBOSE @loggingParameters
+            }
+        }
+    }
     #region configFilesToReplacePasswordIn
     try {
         $guid = (New-Guid) -replace '-',''
@@ -474,20 +509,25 @@ function New-EPRInstallation {
             $catalinaJar = (Get-ChildItem -Path $installerSettings.TomcatRootDirectory -Recurse -Include 'catalina.jar').FullName
             $processServerInfo = @{
                 FilePath = "$javaExe"
+                PassThru = $true
                 NoNewWindow = $true
                 Wait = $true
             }
-            Start-Process @processServerInfo -ArgumentList '-cp',$catalinaJar,'org.apache.catalina.util.ServerInfo' -RedirectStandardOutput serverInfo
-            if ($serverInfo) {
+            $serverProcess = Start-Process @processServerInfo -ArgumentList '-cp',$catalinaJar,'org.apache.catalina.util.ServerInfo' -RedirectStandardOutput serverInfo
+            if ($serverProcess) {
+                $serverInfoArray = Get-Content -Path '.\serverInfo' | ConvertFrom-Csv -Delimiter ':' -Header 'Name','Value'
                 try {
-                    $serverInfoArray = $serverInfo -split '\n'
-                    $allObjects = $serverInfoArray | ConvertFrom-Csv -Delimiter ':' -Header 'Name','Value'
-                    $installerSettings | Add-Member -MemberType NoteProperty -Name 'OSVersion' -Value ($allObjects | Where-Object Name -EQ 'OS Name').Value
-                    $installerSettings | Add-Member -MemberType NoteProperty -Name 'TomcatVersion' -Value ($allObjects | Where-Object Name -EQ 'Server number').Value
-                    $installerSettings | Add-Member -MemberType NoteProperty -Name 'JavaVersion' -Value ($allObjects | Where-Object Name -EQ 'JVM Version').Value
+                    $installerSettings | Add-Member -MemberType NoteProperty -Name 'OSVersion' -Value ($serverInfoArray | Where-Object Name -EQ 'OS Name').Value
+                    $installerSettings | Add-Member -MemberType NoteProperty -Name 'TomcatVersion' -Value ($serverInfoArray | Where-Object Name -EQ 'Server number').Value
+                    $installerSettings | Add-Member -MemberType NoteProperty -Name 'JavaVersion' -Value ($serverInfoArray | Where-Object Name -EQ 'JVM Version').Value
                 } catch {
                     Write-EPRInstallLog -Message "Failed to get server info details" -Level VERBOSE @loggingParameters
                     Write-EPRInstallLog -InputObject $_ -Level VERBOSE @loggingParameters
+                }
+                try {
+                    Remove-Item -Path '.\serverInfo' -Force -Confirm:$false
+                } catch {
+                    Write-EPRInstallLog -Message "Unable to remove serverInfo" -Level VERBOSE @loggingParameters
                 }
             }
         }
@@ -507,7 +547,8 @@ function New-EPRInstallation {
     }
     if (($installerSettings.Parameters.SendInstallationDetailsToEasit -eq 'True') -and $body) {
         try {
-            $pair = "$($installerSettings.FeedbackSettings.apikey): "
+            $apikey = [System.Text.Encoding]::Unicode.GetString([System.Convert]::FromBase64String($installerSettings.FeedbackSettings.apikey))
+            $pair = "${apikey}: "
             $encodedCreds = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes($pair))
             $basicAuthValue = "Basic $encodedCreds"
             $headers = @{SOAPAction = ""; Authorization = $basicAuthValue }
