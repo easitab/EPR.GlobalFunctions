@@ -15,8 +15,8 @@ BeforeAll {
     }
 }
 Describe "New-EPRInstallation" -Tag 'function' {
-    It 'should have a parameter named CustomerID that is mandatory and accepts a number.' {
-        Get-Command "$commandName" | Should -HaveParameter CustomerID -Mandatory -Type Int
+    It 'should have a parameter named InstanceID that is mandatory and accepts a string.' {
+        Get-Command "$commandName" | Should -HaveParameter InstanceID -Mandatory -Type String
     }
     It 'should have a parameter named FromDirectory that is mandatory and accepts a string.' {
         Get-Command "$commandName" | Should -HaveParameter FromDirectory -Mandatory -Type String

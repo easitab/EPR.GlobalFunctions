@@ -7,8 +7,8 @@ function New-EPRInstallation {
         This function will first look for settings in *.\lib\installerSettings.json* relative to path provided as *FromDirectory*.
         The settings in this file will be replaced in memory with any input provided with *InstallLocation*, *SystemName*, *Port* and *TomcatXmx*.
         Settings provided via a parameter will be used over settings in *installerSettings.json*
-    .PARAMETER CustomerID
-        ID from Easit AB representing the customer.
+    .PARAMETER InstanceID
+        ID from Easit AB representing the customers instance.
     .PARAMETER FromDirectory
         Path to the directory of expanded install archive containing the directories 'archives' and 'lib'.
     .PARAMETER InstallLocation
@@ -26,16 +26,16 @@ function New-EPRInstallation {
     .PARAMETER DoNotSendInstallationDetailsToEasit
         Specifies if the installer should NOT try to send server and installations details to Easit upon completed installation.
     .EXAMPLE
-        PS> New-EPRInstallation -CustomerID 12345 -FromDirectory '.\EPRInstaller-1.0.0'
+        PS> New-EPRInstallation -InstanceID ABC123 -FromDirectory '.\EPRInstaller-1.0.0'
     .EXAMPLE
-        PS> New-EPRInstallation -CustomerID 12345 -FromDirectory '.\EPRInstaller-1.0.0' -InstallLocation 'E:\'
+        PS> New-EPRInstallation -InstanceID ABC123 -FromDirectory '.\EPRInstaller-1.0.0' -InstallLocation 'E:\'
     .EXAMPLE
-        PS> New-EPRInstallation -CustomerID 12345 -FromDirectory '.\EPRInstaller-1.0.0' -InstallLocation 'F:\' -Port 9005
+        PS> New-EPRInstallation -InstanceID ABC123 -FromDirectory '.\EPRInstaller-1.0.0' -InstallLocation 'F:\' -Port 9005
     #>
     [CmdletBinding()]
     param (
         [Parameter(Mandatory)]
-        [int]$CustomerID,
+        [string]$InstanceID,
         [Parameter(Mandatory)]
         [string]$FromDirectory,
         [Parameter()]
@@ -115,7 +115,7 @@ function New-EPRInstallation {
         }
         try {
             $installerSettings = $jsonSettings | ConvertFrom-Json -ErrorAction Stop
-            $installerSettings | Add-Member -MemberType NoteProperty -Name 'CustomerID' -Value "$CustomerID"
+            $installerSettings | Add-Member -MemberType NoteProperty -Name 'InstanceID' -Value "$InstanceID"
         } catch {
             Write-EPRInstallLog -InputObject $_ -Level 'ERROR' @loggingParameters
             return
@@ -566,7 +566,7 @@ function New-EPRInstallation {
                 Headers = $headers
             }
             $null = Invoke-RestMethod @restParams
-            $wassenttoeasit = "These details was sent to Easit"
+            $wassenttoeasit = "These details were sent to Easit"
         } catch {
             $wassenttoeasit = "Please provide these installation details to Easit as they will be used for statistics and documentation. You can simply send them to support@easit.com"
             Write-EPRInstallLog -InputObject $_ -Level VERBOSE @loggingParameters
