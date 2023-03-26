@@ -27,7 +27,7 @@ begin {
 }
 
 process {
-    Write-Host "$ModuleName"
+    Write-Host "CompanyName = $CompanyName, ModuleName = $ModuleName"
     return
     $repoRoot = Split-Path -Path $PSScriptRoot -Parent
     $sourceRoot = Join-Path $repoRoot -ChildPath 'source'
