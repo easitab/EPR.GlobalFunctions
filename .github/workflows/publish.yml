@@ -22,4 +22,4 @@ jobs:
           semver_only: true
       
       - name: Result
-        run: echo "${{ steps.get-latest-tag.outputs.level }}"
+        run: echo "${{ steps.get-latest-tag.outputs.tag }}"
