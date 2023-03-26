@@ -13,8 +13,8 @@ jobs:
       
       - uses: actions-ecosystem/action-release-label@v1
         id: release-label
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+        #with:
+        #  github_token: ${{ secrets.GITHUB_TOKEN }}
       # https://github.com/actions-ecosystem/action-get-latest-tag
       - uses: actions-ecosystem/action-get-latest-tag@v1
         id: get-latest-tag
@@ -22,4 +22,6 @@ jobs:
           semver_only: true
       
       - name: Result
-        run: echo "${{ steps.get-latest-tag.outputs.tag }}"
+        # run: echo "${{ steps.get-latest-tag.outputs.tag }}"
+        run: ./build/publishmodule.ps1 ${{ steps.get-latest-tag.outputs.tag }}
+        shell: pwsh
