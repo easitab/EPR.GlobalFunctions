@@ -1,24 +1,24 @@
 [CmdletBinding()]
 param (
-    [Parameter()]
+    [Parameter(Mandatory)]
     [string]$CompanyName,
-    [Parameter()]
+    [Parameter(Mandatory)]
     [string]$ModuleName,
-    [Parameter()]
+    [Parameter(Mandatory)]
     [string]$Tag,
-    [Parameter()]
+    [Parameter(Mandatory)]
     [string]$PSGalleryKey,
-    [Parameter()]
+    [Parameter(Mandatory)]
     [string]$GitHubBaseURI,
-    [Parameter()]
+    [Parameter(Mandatory)]
     [string]$TechspaceBaseURI,
-    [Parameter()]
+    [Parameter(Mandatory)]
     [string]$ModuleDescription,
-    [Parameter()]
+    [Parameter(Mandatory)]
     [string]$ModulePSVersion,
-    [Parameter()]
+    [Parameter(Mandatory)]
     [string]$ModuleAuthor,
-    [Parameter()]
+    [Parameter(Mandatory)]
     [string]$Copyright
 )
 
@@ -27,8 +27,6 @@ begin {
 }
 
 process {
-    Write-Host "CompanyName = $CompanyName, ModuleName = $ModuleName"
-    return
     $repoRoot = Split-Path -Path $PSScriptRoot -Parent
     $sourceRoot = Join-Path $repoRoot -ChildPath 'source'
     $tempBuildDirectory = Join-Path $repoRoot -ChildPath 'temp'
@@ -92,7 +90,12 @@ process {
     }
     if (Test-ModuleManifest -Path "$manifestFilePath") {
         Write-Host "Publishing module to PSGallery"
-        Publish-Module -Path "$moduleRoot" -NuGetApiKey "$PSGalleryKey"
+        try {
+            Publish-Module -Path "$moduleRoot" -NuGetApiKey "$PSGalleryKey"
+        } catch {
+            Write-Warning "Failed to publish module to gallery"
+            throw $_
+        }
         Write-Host "Module published!"
     }
 }

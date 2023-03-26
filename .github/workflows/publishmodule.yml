@@ -7,7 +7,7 @@ on:
 
 jobs:
   test:
-    name: Build module from source
+    name: Test source
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
