@@ -1,0 +1,6 @@
+name: Publish module
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
