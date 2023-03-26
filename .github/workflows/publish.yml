@@ -9,11 +9,18 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@main
-      - name: Checkout
-        run: echo "Check out"
-      - name: Get Previous tag
-        uses: "WyriHaximus/github-action-get-previous-tag@v1"
-        id: previoustag
-      - name: Tag name
-        run: echo "Tag name = ${{ steps.previoustag.outputs.patch }}"
+      - uses: nowsprinting/check-version-format-action@v3
+        id: version
+
+      - name: Version tag only step
+        run: |
+          echo "Found valid version format in tag!"
+          echo "Full version: ${{ steps.version.outputs.full }}"
+          echo "Major version: ${{ steps.version.outputs.major }}"
+          echo "Major with pre-release: ${{ steps.version.outputs.major_prerelease }}"
+        if: steps.version.outputs.is_valid == 'true'
+
+      - name: Stable version only step
+        run: |
+          echo "Found stable version in tag!"
+        if: steps.version.outputs.is_stable == 'true'
