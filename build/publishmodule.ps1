@@ -1,24 +1,24 @@
 [CmdletBinding()]
 param (
-    [Parameter(Mandatory)]
+    [Parameter()]
     [string]$CompanyName,
-    [Parameter(Mandatory)]
+    [Parameter()]
     [string]$ModuleName,
-    [Parameter(Mandatory)]
+    [Parameter()]
     [string]$Tag,
-    [Parameter(Mandatory)]
+    [Parameter()]
     [string]$PSGalleryKey,
-    [Parameter(Mandatory)]
+    [Parameter()]
     [string]$GitHubBaseURI,
-    [Parameter(Mandatory)]
+    [Parameter()]
     [string]$TechspaceBaseURI,
-    [Parameter(Mandatory)]
+    [Parameter()]
     [string]$ModuleDescription,
-    [Parameter(Mandatory)]
+    [Parameter()]
     [string]$ModulePSVersion,
-    [Parameter(Mandatory)]
+    [Parameter()]
     [string]$ModuleAuthor,
-    [Parameter(Mandatory)]
+    [Parameter()]
     [string]$Copyright
 )
 
