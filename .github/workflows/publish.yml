@@ -9,18 +9,15 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: nowsprinting/check-version-format-action@v3
-        id: version
-
-      - name: Version tag only step
-        run: |
-          echo "Found valid version format in tag!"
-          echo "Full version: ${{ steps.version.outputs.full }}"
-          echo "Major version: ${{ steps.version.outputs.major }}"
-          echo "Major with pre-release: ${{ steps.version.outputs.major_prerelease }}"
-        if: steps.version.outputs.is_valid == 'true'
-
-      - name: Stable version only step
-        run: |
-          echo "Found stable version in tag!"
-        if: steps.version.outputs.is_stable == 'true'
+      - uses: actions/checkout@main
+      
+      - uses: actions-ecosystem/action-release-label@v1
+        id: release-label
+        # if: ${{ github.event.pull_request.merged == true }}
+      # https://github.com/actions-ecosystem/action-get-latest-tag
+      - uses: actions-ecosystem/action-get-latest-tag@v1
+        id: get-latest-tag
+        if: ${{ steps.release-label.outputs.level != null }}
+      
+      - name: Result
+        run: echo "${{ steps.get-latest-tag.outputs.level }}"
