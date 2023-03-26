@@ -12,9 +12,8 @@ jobs:
       - uses: actions/checkout@main
       - name: Checkout
         run: echo "Check out"
-      - name: GitHub Tag Name example
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-         echo "Tag name from GITHUB_REF_NAME: $GITHUB_REF_NAME"
-         echo "Tag name from github.ref: ${{  github.ref }}"
+      - name: Get Previous tag
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+        id: previoustag
+      - name: Tag name
+        run: echo "Tag name = ${{ steps.previoustag.outputs.patch }}"
