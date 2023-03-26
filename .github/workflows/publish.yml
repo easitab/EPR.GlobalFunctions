@@ -9,15 +9,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@main
       
       - uses: actions-ecosystem/action-release-label@v1
         id: release-label
-        # if: ${{ github.event.pull_request.merged == true }}
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
       # https://github.com/actions-ecosystem/action-get-latest-tag
       - uses: actions-ecosystem/action-get-latest-tag@v1
         id: get-latest-tag
-        if: ${{ steps.release-label.outputs.level != null }}
+        with:
+          semver_only: true
       
       - name: Result
         run: echo "${{ steps.get-latest-tag.outputs.level }}"
