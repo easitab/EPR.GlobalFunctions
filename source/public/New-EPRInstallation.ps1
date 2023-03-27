@@ -422,7 +422,7 @@ function New-EPRInstallation {
             return
         }
         $pwshExecutable = $null
-        $pwshExecutable = ((Get-Variable pshome).value).FullName
+        $pwshExecutable = (Get-ChildItem -Path (Get-Variable pshome).value  -Recurse -Include 'pwsh.exe').FullName
         "pwshExecutable = $pwshExecutable"
         if (!($pwshExecutable)) {
             Write-EPRInstallLog -Message "Unable to find pwsh.exe" -Level WARN @loggingParameters
