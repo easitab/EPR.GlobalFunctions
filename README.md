@@ -4,13 +4,13 @@ This is the repository for the PowerShell module included with EasitProcessRunne
 
 ## Project status
 
-![Build & Publish status](https://ci.appveyor.com/api/projects/status/bhw209scv0ijmt0x?svg=true) ![Generate and update help](https://github.com/easitab/EPR.GlobalFunctions/workflows/Generate%20and%20update%20help/badge.svg)
+[![Run PSSA and Pester](https://github.com/easitab/EPR.GlobalFunctions/actions/workflows/source-run-pssa-and-pester.yml/badge.svg)](https://github.com/easitab/EPR.GlobalFunctions/actions/workflows/source-run-pssa-and-pester.yml)
 
-![Test source with PSSA and Pester](https://github.com/easitab/EPR.GlobalFunctions/workflows/Test%20source%20with%20PSSA%20and%20Pester/badge.svg) ![Test tests with Pester](https://github.com/easitab/EPR.GlobalFunctions/workflows/Test%20tests%20with%20Pester/badge.svg)
+[![Publish module](https://github.com/easitab/EPR.GlobalFunctions/actions/workflows/publishmodule.yml/badge.svg?branch=main)](https://github.com/easitab/EPR.GlobalFunctions/actions/workflows/publishmodule.yml)
 
 ## Docs
 
-[You will find the docs regarding EPR.GlobalFunctions here](https://docs.easitgo.com/techspace/epr/globalfunctions/)
+[You will find the docs regarding Easit Process Runner and EPR.GlobalFunctions here](https://docs.easitgo.com/techspace/epr/globalfunctions/)
 
 ## Support & Questions
 
