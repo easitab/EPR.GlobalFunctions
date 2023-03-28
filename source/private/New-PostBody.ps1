@@ -48,7 +48,7 @@ function New-PostBody {
         $items += $itemObject
         $bodyObject = [PSCustomObject]@{
             importHandlerIdentifier = $InstallerSettings.FeedbackSettings.postBody.importHandlerIdentifier
-            itemToImportObject = $items
+            itemToImport = $items
         }
         try {
             $bodyObject | ConvertTo-Json -Depth 4
