@@ -42,8 +42,12 @@ function New-PostBody {
             }
             $propertiesArray += $propObject
         }
+        $guid = (New-Guid) -replace '-',''
         $itemObject = [PSCustomObject]@{
             property = $propertiesArray
+            id = $guid
+            uid = $guid
+            
         }
         $items += $itemObject
         $bodyObject = [PSCustomObject]@{
