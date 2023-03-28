@@ -1,4 +1,4 @@
-name: Run PSSA and Pester
+name: Test source with PSSA and Pester
 
 on:
   pull_request:
