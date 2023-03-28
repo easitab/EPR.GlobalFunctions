@@ -1,4 +1,4 @@
-name: Run Pester tests
+name: Test tests with Pester
 
 on:
   pull_request:
