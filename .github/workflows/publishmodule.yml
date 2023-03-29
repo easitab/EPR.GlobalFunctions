@@ -34,13 +34,13 @@ jobs:
       - name: Result
         shell: pwsh
         run: ./build/publishmodule.ps1 \
-          -CompanyName ${{ vars.COMPANYNAME }} \
-          -ModuleName ${{ vars.MODULENAME }} \
-          -Tag ${{ steps.get-latest-tag.outputs.tag }} \
-          -PSGalleryKey ${{ secrets.PSGALLERYKEY }} \
-          -GitHubBaseURI ${{ vars.GITHUBBASEURI }} \
-          -TechspaceBaseURI ${{ vars.TECHSPACEBASEURI }} \
-          -ModuleDescription ${{ vars.PSMODULEDESCRIPTION }} \
-          -ModulePSVersion ${{ vars.PSMODULEPOWERSHELLVERSION }} \
-          -ModuleAuthor ${{ vars.MODULEAUTHOR }} \
-          -Copyright ${{ vars.COPYRIGHT }}
+          -CompanyName "${{ vars.COMPANYNAME }}" \
+          -ModuleName "${{ vars.MODULENAME }}" \
+          -Tag "${{ steps.get-latest-tag.outputs.tag }}" \
+          -PSGalleryKey "${{ secrets.PSGALLERYKEY }}" \
+          -GitHubBaseURI "${{ vars.GITHUBBASEURI }}" \
+          -TechspaceBaseURI "${{ vars.TECHSPACEBASEURI }}" \
+          -ModuleDescription "${{ vars.PSMODULEDESCRIPTION }}" \
+          -ModulePSVersion "${{ vars.PSMODULEPOWERSHELLVERSION }}" \
+          -ModuleAuthor "${{ vars.MODULEAUTHOR }}" \
+          -Copyright "${{ vars.COPYRIGHT }}"
