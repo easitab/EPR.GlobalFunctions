@@ -14,7 +14,7 @@ This is the repository for the PowerShell module included with EasitProcessRunne
 
 ## Docs & Introduction
 
-All documentation regarding EPR.GlobalFunctions can be found here (https://docs.easitgo.com/techspace/psmodules/intro/) and an "intro" to Easit Process Runner can be found here [](https://docs.easitgo.com/techspace/easitgo/epr/v1/intro/)
+All documentation regarding EPR.GlobalFunctions can be found [here](https://docs.easitgo.com/techspace/psmodules/intro/) and an "intro" to Easit Process Runner can be found here [](https://docs.easitgo.com/techspace/easitgo/epr/v1/intro/)
 
 ## Support & Questions
 
