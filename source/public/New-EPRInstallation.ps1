@@ -60,10 +60,12 @@ function New-EPRInstallation {
     
     process {
         if (!($DoNotSendInstallationDetailsToEasit) -and !($UseSettingsFromFile)) {
-            Write-Host "----------------------------------------------- Disclaimer -------------------------------------------------" -ForegroundColor DarkGreen
-            Write-Host "Easit AB would like to collect and send information about this installation for statistics and analyzes" -ForegroundColor DarkGreen
-            Write-Host "such as SystemRootDirectory, TomcatRootDirectory, TomcatVersion, JavaVersion, ServiceName. If you DO NOT want" -ForegroundColor DarkGreen
-            Write-Host "to send this information to Easit, please enter 'n' or 'false' below and press enter. Otherwise, just press enter." -ForegroundColor DarkGreen
+            Write-Host "" -ForegroundColor DarkGreen
+            Write-Host "     ----------------------------------------------- Disclaimer -------------------------------------------------" -ForegroundColor DarkGreen
+            Write-Host "     Easit would like to collect and send information about this installation for statistics and analyzes" -ForegroundColor DarkGreen
+            Write-Host "     such as SystemRootDirectory, TomcatRootDirectory, TomcatVersion, JavaVersion, ServiceName. If you DO NOT want" -ForegroundColor DarkGreen
+            Write-Host "     to send this information to Easit, please enter 'n' or 'false' below and press enter. Otherwise, just press enter." -ForegroundColor DarkGreen
+            Write-Host "" -ForegroundColor DarkGreen
             $promptInput = Read-Host -Prompt "SendDetailsToEasit"
             if ([string]::IsNullOrEmpty($promptInput) -or $null -eq $promptInput) {
                 $SendInstallationDetailsToEasit = $true
