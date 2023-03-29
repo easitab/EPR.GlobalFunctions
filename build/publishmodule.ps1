@@ -74,7 +74,7 @@ process {
         CompanyName       = "$CompanyName"
         Author            = "$ModuleAuthor"
         ModuleVersion     = "$Tag"
-        HelpInfoUri       = "$TechspaceBaseURI/easitgo/powershellmodules/intro/"
+        HelpInfoUri       = "$TechspaceBaseURI/psmodules/intro/"
         LicenseUri        = "$GitHubBaseURI/$ModuleName/blob/main/LICENSE"
         ProjectUri        = "$GitHubBaseURI/$ModuleName"
         Description       = "$ModuleDescription"
