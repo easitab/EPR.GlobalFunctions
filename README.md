@@ -10,7 +10,7 @@ This is the repository for the PowerShell module included with Easit Process Run
 
 [![Release notes](https://github.com/easitab/EPR.GlobalFunctions/actions/workflows/release-drafter.yml/badge.svg)](https://github.com/easitab/EPR.GlobalFunctions/actions/workflows/release-drafter.yml)
 
-[![Publish module](https://github.com/easitab/EPR.GlobalFunctions/actions/workflows/publishmodule.yml/badge.svg)](https://github.com/easitab/EPR.GlobalFunctions/actions/workflows/publishmodule.yml)
+[![Publish module](https://github.com/easitab/EPR.GlobalFunctions/actions/workflows/publishmodule.yml/badge.svg?branch=main)](https://github.com/easitab/EPR.GlobalFunctions/actions/workflows/publishmodule.yml)
 
 ## Docs & Introduction
 
