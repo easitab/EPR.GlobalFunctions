@@ -1,6 +1,6 @@
 # EPR.GlobalFunctions
 
-This is the repository for the PowerShell module included with EasitProcessRunner.
+This is the repository for the PowerShell module included with Easit Process Runner.
 
 ## Project status
 
@@ -12,11 +12,12 @@ This is the repository for the PowerShell module included with EasitProcessRunne
 
 [![Publish module](https://github.com/easitab/EPR.GlobalFunctions/actions/workflows/publishmodule.yml/badge.svg)](https://github.com/easitab/EPR.GlobalFunctions/actions/workflows/publishmodule.yml)
 
-## Docs
+## Docs & Introduction
 
-[You will find the docs regarding Easit Process Runner and EPR.GlobalFunctions here](https://docs.easitgo.com/techspace/epr/globalfunctions/)
+All documentation regarding EPR.GlobalFunctions can be found [here](https://docs.easitgo.com/techspace/psmodules/intro/) and an "intro" to Easit Process Runner can be found [here](https://docs.easitgo.com/techspace/easitgo/epr/v1/intro/)
 
 ## Support & Questions
 
 Questions and issue can be sent to [supportATeasit](mailto:support@easit.com) or open a issue from the Issues tab and label it with one of the predefined labels.
 
+You can also join our Slack chanel [process-runner here](https://easit-powershell.slack.com/archives/C050S5D7FPC).
