@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param (
     [Parameter()]
-    [string]$ModuleName = 'Easit.PR.GlobalFunctions',
+    [string]$ModuleName = 'Easit.ProcessRunner.GlobalFunctions',
     [Parameter()]
     [string]$Tag = '9.9.9'
 )
