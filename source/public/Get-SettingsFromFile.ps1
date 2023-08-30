@@ -44,7 +44,7 @@ function Get-SettingsFromFile {
             $Filename = $callStack[1].Command.TrimEnd('\.ps1')
         }
         if ([string]::IsNullOrEmpty($Path)) {
-            $Path = $easitPRscriptSettingsDirectory
+            $Path = $epr_scriptSettingsDirectory
         }
         if (!(Test-Path -Path $Path)) {
             throw "Unable to find $Path"
