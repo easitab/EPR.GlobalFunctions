@@ -92,7 +92,12 @@ function Write-CustomLog {
         [Parameter()]
         [switch]$Rotate
 	)
-    $globalLoggerSettings = $global:LoggerSettings
+    if (!($null -eq $global:LoggerSettings)) {
+        $globalLoggerSettings = $global:LoggerSettings
+    }
+    if (!($null -eq $global:epr_LoggerSettings)) {
+        $globalLoggerSettings = $global:epr_LoggerSettings
+    }
 	if ([string]::IsNullOrWhiteSpace($LogName)) {
         if (!([string]::IsNullOrWhiteSpace($globalLoggerSettings.LogName))) {
             $LogName = $globalLoggerSettings.LogName
