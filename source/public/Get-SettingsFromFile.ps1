@@ -33,11 +33,9 @@ function Get-SettingsFromFile {
         [Parameter()]
         [string]$Path
     )
-    
     begin {
         Write-Verbose "$($MyInvocation.MyCommand) begin"
     }
-    
     process {
         if ([string]::IsNullOrEmpty($Filename)) {
             $callStack = Get-PSCallStack
@@ -89,7 +87,7 @@ function Get-SettingsFromFile {
             } catch {
                 throw $_
             }
-        } 
+        }
         if ($settingsFile.Count -gt 1) {
             throw "Multiple setting files found"
         }
@@ -138,7 +136,6 @@ function Get-SettingsFromFile {
         }
         $returnObject
     }
-    
     end {
         Write-Verbose "$($MyInvocation.MyCommand) end"
     }
