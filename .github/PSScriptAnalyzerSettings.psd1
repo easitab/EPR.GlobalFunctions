@@ -11,6 +11,7 @@
     ExcludeRules = @(
         'PSUseShouldProcessForStateChangingFunctions',
         'PSUseDeclaredVarsMoreThanAssignments',
-        'PSAvoidUsingConvertToSecureStringWithPlainText'
+        'PSAvoidUsingConvertToSecureStringWithPlainText',
+        'PSAvoidUsingWriteHost'
     )
 }

@@ -23,15 +23,14 @@ function New-PostBody {
         JSON formatted string.
     #>
     [CmdletBinding()]
+    [OutputType('System.String')]
     param (
         [Parameter(Mandatory)]
         [PSCustomObject]$InstallerSettings
     )
-    
     begin {
-        
+        Write-Verbose "$($MyInvocation.MyCommand) begin"
     }
-    
     process {
         $items = @()
         $propertiesArray = @()
@@ -47,7 +46,6 @@ function New-PostBody {
             property = $propertiesArray
             id = $guid
             uid = $guid
-            
         }
         $items += $itemObject
         $bodyObject = [PSCustomObject]@{
@@ -60,8 +58,7 @@ function New-PostBody {
             throw $_
         }
     }
-    
     end {
-        
+        Write-Verbose "$($MyInvocation.MyCommand) end"
     }
 }

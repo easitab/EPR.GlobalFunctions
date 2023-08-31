@@ -20,8 +20,6 @@ function Write-EPRInstallLog {
         Name of log written to.
     .PARAMETER LogDirectory
         Directory to write log file in.
-    .PARAMETER LogLevel
-        What level the logger should output entries on.
     .OUTPUTS
         None. This cmdlet returns no output.
     #>
@@ -36,34 +34,39 @@ function Write-EPRInstallLog {
         [Parameter()]
         [string]$LogName = 'EPRInstall',
         [Parameter()]
-        [string]$LogDirectory,
-        [Parameter()]
-        [string]$LogLevel = 'INFO'
+        [string]$LogDirectory
     )
-    
-    $FormattedDate = Get-Date -Format "yyyy-MM-dd HH:mm:ss.fff"
-    $today = Get-Date -Format "yyyyMMdd"
-    $LogName = "${LogName}_${today}.log"
-    $LogPath = Join-Path -Path "$LogDirectory" -ChildPath "$LogName"
-    if ($InputObject -and $Level -eq 'ERROR') {
-        $Message = $InputObject.Exception
+    begin {
+        Write-Verbose "$($MyInvocation.MyCommand) begin"
     }
-    if ($InputObject -and $Level -ne 'ERROR') {
-        $Message = $InputObject.ToString()
+    process {
+        $FormattedDate = Get-Date -Format "yyyy-MM-dd HH:mm:ss.fff"
+        $today = Get-Date -Format "yyyyMMdd"
+        $LogName = "${LogName}_${today}.log"
+        $LogPath = Join-Path -Path "$LogDirectory" -ChildPath "$LogName"
+        if ($InputObject -and $Level -eq 'ERROR') {
+            $Message = $InputObject.Exception
+        }
+        if ($InputObject -and $Level -ne 'ERROR') {
+            $Message = $InputObject.ToString()
+        }
+        "$FormattedDate - $Level - $Message" | Out-File -FilePath "$LogPath" -Encoding UTF8 -Append -NoClobber
+        if ($InputObject) {
+            $InputObject | Out-File -FilePath "$LogPath" -Encoding UTF8 -Append -NoClobber
+        }
+        $Message = "$FormattedDate - $Message"
+        # Write message to error, warning, or verbose pipeline
+        if ($Level -eq 'ERROR') {
+            Write-Error "$Message" -ErrorAction Continue
+        } elseif ($Level -eq 'WARN') {
+            Write-Warning "$Message" -WarningAction Continue
+        } elseif ($Level -eq 'INFO') {
+            Write-Information "$Message" -InformationAction Continue
+        } else {
+            ## Nothin to do
+        }
     }
-    "$FormattedDate - $Level - $Message" | Out-File -FilePath "$LogPath" -Encoding UTF8 -Append -NoClobber
-    if ($InputObject) {
-        $InputObject | Out-File -FilePath "$LogPath" -Encoding UTF8 -Append -NoClobber
-    }
-    $Message = "$FormattedDate - $Message"
-    # Write message to error, warning, or verbose pipeline
-    if ($Level -eq 'ERROR') {
-        Write-Error "$Message" -ErrorAction Continue
-    } elseif ($Level -eq 'WARN') {
-        Write-Warning "$Message" -WarningAction Continue
-    } elseif ($Level -eq 'INFO') {
-        Write-Information "$Message" -InformationAction Continue
-    } else {
-        ## Nothin to do
+    end {
+        Write-Verbose "$($MyInvocation.MyCommand) end"
     }
 }
