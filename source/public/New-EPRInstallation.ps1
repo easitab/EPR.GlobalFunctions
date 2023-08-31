@@ -348,7 +348,8 @@ function New-EPRInstallation {
         try {
             $file = Get-ChildItem -Path "$tomcatConfRoot" -Recurse -Include "$tomcatFileToReplaceSystemPortIn"
         } catch {
-
+            Write-EPRInstallLog -InputObject $_ -Level ERROR @loggingParameters
+            return
         }
         try {
             $fileContent = Get-Content -Path $file.FullName -Raw
@@ -386,7 +387,8 @@ function New-EPRInstallation {
         try {
             $file = Get-ChildItem -Path "$systemConfigRoot" -Recurse -Include "$configFileToReplaceSystemRootIn"
         } catch {
-
+            Write-EPRInstallLog -InputObject $_ -Level ERROR @loggingParameters
+            return
         }
         try {
             $fileContent = Get-Content -Path $file.FullName -Raw
@@ -544,7 +546,7 @@ function New-EPRInstallation {
     } catch {
         Write-EPRInstallLog -InputObject $_ -Level VERBOSE @loggingParameters
     }
-    if (!($null = $SendInstallationDetailsToEasit)) {
+    if (!($null -eq $SendInstallationDetailsToEasit)) {
         $installerSettings.Parameters.SendInstallationDetailsToEasit = "$SendInstallationDetailsToEasit"
     }
     if (($installerSettings.Parameters.SendInstallationDetailsToEasit -eq 'True') -and $body) {
