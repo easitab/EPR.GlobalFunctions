@@ -13,12 +13,12 @@ function Write-CustomLog {
         *Write-CustomLog* uses *Out-File* for writing output to a file and then redirects either *Message*
         or *InputObject* to the stream corresponding with the value of *Level*.
 
-        If no input is provided for *-LogName*, *-LogDirectory* nor *-RotationInterval* the function will look for a variable named LoggerSettings in the global scope with a property or key with the same name and use that value. 
-        
+        If no input is provided for *-LogName*, *-LogDirectory* nor *-RotationInterval* the function will look for a variable named LoggerSettings in the global scope with a property or key with the same name and use that value.
+
         If no input is provided for *-LogName*, the name of the caller script is used as input.
-        
+
         If no input is provided for *-LogDirectory*, logs will be written to $pwd.
-        
+
         If no input is provided for *-RotationInterval*, 30 will used as value.
     .PARAMETER Message
         String that will be written to file and stream.
