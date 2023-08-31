@@ -43,6 +43,6 @@ Describe "Get-SettingsFromFile" -Tag 'function' {
         Get-Command "$($envSettings.CommandName)" | Should -HaveParameter Path -Type String
     }
     It 'should return a PSCustomObjec' {
-        Get-SettingsFromFile -Filename 'Get-SettingsFromFile' -Path $testDataRoot | Should -BeOfType PSCustomObject
+        Get-SettingsFromFile -Filename 'Get-SettingsFromFile' -Path $envSettings.TestDataDirectory | Should -BeOfType PSCustomObject
     }
 }
