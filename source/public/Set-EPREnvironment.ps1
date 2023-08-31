@@ -1,4 +1,43 @@
 function Set-EPREnvironment {
+    <#
+    .SYNOPSIS
+        Sets a number of new variables in the script scope.
+    .DESCRIPTION
+        By running this function in the beginning of your script the following variables will be made available:
+
+        - epr_Directory
+        - epr_logsDirectory
+        - epr_scriptsDirectory
+        - epr_scriptSettingsDirectory
+        - epr_scriptHelpersDirectory
+        - epr_modulesDirectory
+        - epr_customModulesDirectory
+        - epr_customFunctionsDirectory
+        - ScriptLogName
+        - LoggerSettings
+    .EXAMPLE
+        Set-EPREnvironment
+    .EXAMPLE
+        Set-EPREnvironment -IncludeOldVariableNames
+
+        In this example we want to get the old variable names along with the new names.
+    .EXAMPLE
+        Set-EPREnvironment -CustomModules "MyModule","AnotherModule"
+
+        In this example we also import the modules 'MyModule' and 'AnotherModule' located in the directory *[NameOfEPRInstall]/scripts/helpers/customModules*.
+    .EXAMPLE
+        Set-EPREnvironment -Modules "MyOfficialModule","AnotherModuleAsAnExample"
+
+        In this example we also import the modules 'MyOfficialModule' and 'AnotherModuleAsAnExample' located in the directory *[NameOfEPRInstall]/scripts/helpers/modules*.
+    .PARAMETER Modules
+        Name of modules to import from *[NameOfEPRInstall]/scripts/helpers/modules*
+    .PARAMETER CustomModules
+        Name of modules to import from *[NameOfEPRInstall]/scripts/helpers/customModules*
+    .PARAMETER IncludeOldVariableNames
+        Specifies if the old variable names should be set in the script scope.
+    .OUTPUTS
+        This function do not produce any output.
+    #>
     [CmdletBinding()]
     [OutputType()]
     param (
