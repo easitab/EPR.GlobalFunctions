@@ -37,7 +37,7 @@ function Convert-OUString {
         dc2    : example
         ou1    : People
         uid1   : john.doe
-        
+
         In this example we are converting a DN to a PSCustomObject.
     .INPUTS
         None. You cannot pipe objects to Convert-OUString.
