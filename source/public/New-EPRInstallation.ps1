@@ -92,7 +92,7 @@ function New-EPRInstallation {
         }
         if ($PSCmdlet.MyInvocation.BoundParameters["Verbose"].IsPresent) {
             $loggingParameters.LogLevel = 'VERBOSE'
-        } 
+        }
         if ($PSCmdlet.MyInvocation.BoundParameters["Debug"].IsPresent) {
             $loggingParameters.LogLevel = 'DEBUG'
         }
