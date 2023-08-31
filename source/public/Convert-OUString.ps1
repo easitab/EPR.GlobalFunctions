@@ -66,7 +66,7 @@ function Convert-OUString {
             $escapeCharacterInCN = $true
         }
         do {
-            $Matches = $null
+            #$Matches = $null
             $null = $OUString -match ',?([A-Za-z]{2,3})=([a-zA-Z0-9-_\.\s]*)$'
             try {
                 $levelName = $Matches[1]
