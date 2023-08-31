@@ -23,7 +23,7 @@ BeforeAll {
         )
     }
 }
-Describe "Get-SettingsFromFile" -Tag 'function' {
+Describe "Get-SettingsFromFile" -Tag 'function','public' {
     It 'should have a parameter named Filename' {
         Get-Command "$($envSettings.CommandName)" | Should -HaveParameter Filename
     }
@@ -41,6 +41,15 @@ Describe "Get-SettingsFromFile" -Tag 'function' {
     }
     It 'and accepts a string' {
         Get-Command "$($envSettings.CommandName)" | Should -HaveParameter Path -Type String
+    }
+    It 'help section should have a SYNOPSIS' {
+        ((Get-Help "$($envSettings.CommandName)" -Full).SYNOPSIS).Length | Should -BeGreaterThan 0
+    }
+    It 'help section should have a DESCRIPTION' {
+        ((Get-Help "$($envSettings.CommandName)" -Full).DESCRIPTION).Length | Should -BeGreaterThan 0
+    }
+    It 'help section should have EXAMPLES' {
+        ((Get-Help "$($envSettings.CommandName)" -Full).EXAMPLES).Length | Should -BeGreaterThan 0
     }
     It 'should return a PSCustomObjec' {
         Get-SettingsFromFile -Filename 'Get-SettingsFromFile' -Path $envSettings.TestDataDirectory | Should -BeOfType PSCustomObject

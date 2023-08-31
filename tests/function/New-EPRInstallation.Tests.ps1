@@ -12,7 +12,7 @@ BeforeAll {
         Write-Output "Unable to locate code file ($($envSettings.CodeFilePath)) to test against!" -ForegroundColor Red
     }
 }
-Describe "New-EPRInstallation" -Tag 'function' {
+Describe "New-EPRInstallation" -Tag 'function','public' {
     It 'should have a parameter named InstanceID that is mandatory and accepts a string.' {
         Get-Command "$($envSettings.CommandName)" | Should -HaveParameter InstanceID -Mandatory -Type String
     }
@@ -36,5 +36,14 @@ Describe "New-EPRInstallation" -Tag 'function' {
     }
     It 'should have a parameter named DoNotSendInstallationDetailsToEasit that is a switch' {
         Get-Command "$($envSettings.CommandName)" | Should -HaveParameter DoNotSendInstallationDetailsToEasit -Type Switch
+    }
+    It 'help section should have a SYNOPSIS' {
+        ((Get-Help "$($envSettings.CommandName)" -Full).SYNOPSIS).Length | Should -BeGreaterThan 0
+    }
+    It 'help section should have a DESCRIPTION' {
+        ((Get-Help "$($envSettings.CommandName)" -Full).DESCRIPTION).Length | Should -BeGreaterThan 0
+    }
+    It 'help section should have EXAMPLES' {
+        ((Get-Help "$($envSettings.CommandName)" -Full).EXAMPLES).Length | Should -BeGreaterThan 0
     }
 }

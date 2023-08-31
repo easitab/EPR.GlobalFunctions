@@ -12,7 +12,7 @@ BeforeAll {
         Write-Output "Unable to locate code file ($($envSettings.CodeFilePath)) to test against!" -ForegroundColor Red
     }
 }
-Describe "Write-EPRInstallLog" -Tag 'function' {
+Describe "Write-EPRInstallLog" -Tag 'function','private' {
     It 'should have a parameter named Message' {
         Get-Command "$($envSettings.CommandName)" | Should -HaveParameter Message
     }
@@ -60,5 +60,14 @@ Describe "Write-EPRInstallLog" -Tag 'function' {
     }
     It 'and accepts a string' {
         Get-Command "$($envSettings.CommandName)" | Should -HaveParameter LogDirectory -Type String
+    }
+    It 'help section should have a SYNOPSIS' {
+        ((Get-Help "$($envSettings.CommandName)" -Full).SYNOPSIS).Length | Should -BeGreaterThan 0
+    }
+    It 'help section should have a DESCRIPTION' {
+        ((Get-Help "$($envSettings.CommandName)" -Full).DESCRIPTION).Length | Should -BeGreaterThan 0
+    }
+    It 'help section should have EXAMPLES' {
+        ((Get-Help "$($envSettings.CommandName)" -Full).EXAMPLES).Length | Should -BeGreaterThan 0
     }
 }
