@@ -15,31 +15,20 @@ function Set-EPREnvironment {
     process {
         $callStack = Get-PSCallStack
         $ScriptName = $callStack[1].Command.TrimEnd('\.ps1')
-        if ($IncludeOldVariableNames) {
-            Write-Warning "You are using the old environment setup, please consider moving to the new environment setup!"
-            try {
-                New-Variable -Name 'easitPRDirectory' -Value (Split-Path -Path (Split-Path -Path $PSScriptRoot) -Parent) -Option ReadOnly -Scope Global
-                New-Variable -Name 'easitPRlogsDirectory' -Value (Join-Path -Path "$epr_Directory" -ChildPath 'logs') -Option ReadOnly -Scope Global
-                New-Variable -Name 'easitPRscriptsDirectory' -Value (Join-Path -Path "$epr_Directory" -ChildPath 'scripts') -Option ReadOnly -Scope Global
-                New-Variable -Name 'easitPRscriptSettingsDirectory' -Value (Join-Path -Path "$epr_scriptsDirectory" -ChildPath 'scriptSettings') -Option ReadOnly -Scope Global
-                New-Variable -Name 'easitPRscriptHelpersDirectory' -Value (Join-Path -Path "$epr_scriptsDirectory" -ChildPath 'helpers') -Option ReadOnly -Scope Global
-                New-Variable -Name 'easitPRmodulesDirectory' -Value (Join-Path -Path "$epr_scriptHelpersDirectory" -ChildPath 'modules') -Option ReadOnly -Scope Global
-                New-Variable -Name 'easitPRcustomModulesDirectory' -Value (Join-Path -Path "$epr_scriptHelpersDirectory" -ChildPath 'customModules') -Option ReadOnly -Scope Global
-                New-Variable -Name 'ScriptLogName' -Value $ScriptName -Option ReadOnly -Scope Global
-            } catch {
-                Write-Warning "Failed to set old variable names"
-                throw $_
-            }
+        $newVarParams = @{
+            Option = 'ReadOnly'
+            Scope = 'Script'
+            Force = $true
         }
         try {
-            New-Variable -Name 'epr_Directory' -Value (Split-Path -Path (Split-Path -Path $PSScriptRoot) -Parent) -Option ReadOnly -Scope Global
-            New-Variable -Name 'epr_logsDirectory' -Value (Join-Path -Path "$epr_Directory" -ChildPath 'logs') -Option ReadOnly -Scope Global
-            New-Variable -Name 'epr_scriptsDirectory' -Value (Join-Path -Path "$epr_Directory" -ChildPath 'scripts') -Option ReadOnly -Scope Global
-            New-Variable -Name 'epr_scriptSettingsDirectory' -Value (Join-Path -Path "$epr_scriptsDirectory" -ChildPath 'scriptSettings') -Option ReadOnly -Scope Global
-            New-Variable -Name 'epr_scriptHelpersDirectory' -Value (Join-Path -Path "$epr_scriptsDirectory" -ChildPath 'helpers') -Option ReadOnly -Scope Global
-            New-Variable -Name 'epr_modulesDirectory' -Value (Join-Path -Path "$epr_scriptHelpersDirectory" -ChildPath 'modules') -Option ReadOnly -Scope Global
-            New-Variable -Name 'epr_customModulesDirectory' -Value (Join-Path -Path "$epr_scriptHelpersDirectory" -ChildPath 'customModules') -Option ReadOnly -Scope Global
-            New-Variable -Name 'ScriptLogName' -Value $ScriptName -Option ReadOnly -Scope Global
+            New-Variable -Name 'epr_Directory' -Value (Split-Path -Path (Split-Path -Path $PSScriptRoot) -Parent) @newVarParams
+            New-Variable -Name 'epr_logsDirectory' -Value (Join-Path -Path "$epr_Directory" -ChildPath 'logs') @newVarParams
+            New-Variable -Name 'epr_scriptsDirectory' -Value (Join-Path -Path "$epr_Directory" -ChildPath 'scripts') @newVarParams
+            New-Variable -Name 'epr_scriptSettingsDirectory' -Value (Join-Path -Path "$epr_scriptsDirectory" -ChildPath 'scriptSettings') @newVarParams
+            New-Variable -Name 'epr_scriptHelpersDirectory' -Value (Join-Path -Path "$epr_scriptsDirectory" -ChildPath 'helpers') @newVarParams
+            New-Variable -Name 'epr_modulesDirectory' -Value (Join-Path -Path "$epr_scriptHelpersDirectory" -ChildPath 'modules') @newVarParams
+            New-Variable -Name 'epr_customModulesDirectory' -Value (Join-Path -Path "$epr_scriptHelpersDirectory" -ChildPath 'customModules') @newVarParams
+            New-Variable -Name 'ScriptLogName' -Value $ScriptName @newVarParams
         } catch {
             Write-Warning "Failed to set EPR variables"
             throw $_
@@ -50,17 +39,31 @@ function Set-EPREnvironment {
             OutputLevel = 'INFO'
             RotationInterval = 30
         }
+        try {
+            New-Variable -Name 'epr_LoggerSettings' -Value $tempHash -Scope Global -Force
+        } catch {
+            throw $_
+        }
         if ($IncludeOldVariableNames) {
+            Write-Warning "You are using the old environment setup, please consider moving to the new environment setup!"
             try {
-                New-Variable -Name 'LoggerSettings' -Value $tempHash -Scope Global
+                New-Variable -Name 'easitPRDirectory' -Value (Split-Path -Path (Split-Path -Path $PSScriptRoot) -Parent) @newVarParams
+                New-Variable -Name 'easitPRlogsDirectory' -Value (Join-Path -Path "$epr_Directory" -ChildPath 'logs') @newVarParams
+                New-Variable -Name 'easitPRscriptsDirectory' -Value (Join-Path -Path "$epr_Directory" -ChildPath 'scripts') @newVarParams
+                New-Variable -Name 'easitPRscriptSettingsDirectory' -Value (Join-Path -Path "$epr_scriptsDirectory" -ChildPath 'scriptSettings') @newVarParams
+                New-Variable -Name 'easitPRscriptHelpersDirectory' -Value (Join-Path -Path "$epr_scriptsDirectory" -ChildPath 'helpers') @newVarParams
+                New-Variable -Name 'easitPRmodulesDirectory' -Value (Join-Path -Path "$epr_scriptHelpersDirectory" -ChildPath 'modules') @newVarParams
+                New-Variable -Name 'easitPRcustomModulesDirectory' -Value (Join-Path -Path "$epr_scriptHelpersDirectory" -ChildPath 'customModules') @newVarParams
+                New-Variable -Name 'ScriptLogName' -Value $ScriptName @newVarParams
+            } catch {
+                Write-Warning "Failed to set old variable names"
+                throw $_
+            }
+            try {
+                New-Variable -Name 'LoggerSettings' -Value $tempHash -Scope Global -Force
             } catch {
                 throw $_
             }
-        }
-        try {
-            New-Variable -Name 'epr_LoggerSettings' -Value $tempHash -Scope Global
-        } catch {
-            throw $_
         }
         if (Test-Path $epr_modulesDirectory) {
             if ($Modules -ge 1 -and !($Modules -eq 'ALL')) {
