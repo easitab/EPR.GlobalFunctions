@@ -1,66 +1,64 @@
 BeforeAll {
-    $testFilePath = $PSCommandPath.Replace('.Tests.ps1','.ps1')
-    $codeFileName = Split-Path -Path $testFilePath -Leaf
-    $commandName = ((Split-Path -Leaf $PSCommandPath) -replace '.ps1','') -replace '.Tests', ''
-    $testFunctionRoot = Split-Path -Path $PSCommandPath -Parent
-    $testRoot = Split-Path -Path $testFunctionRoot -Parent
-    $testDataRoot = Join-Path -Path "$testRoot" -ChildPath "data"
-    $projectRoot = Split-Path -Path $testRoot -Parent
-    $sourceRoot = Join-Path -Path "$projectRoot" -ChildPath "source"
-    $codeFile = Get-ChildItem -Path "$sourceRoot" -Include "$codeFileName" -Recurse
-    if (Test-Path $codeFile) {
-        . $codeFile
+    try {
+        $getEnvSetPath = Join-Path -Path (Split-Path -Path (Split-Path -Path $PSCommandPath -Parent) -Parent) -ChildPath 'getEnvironmentSetting.ps1'
+        . $getEnvSetPath
+        $envSettings = Get-EnvironmentSetting -Path $PSCommandPath
+    } catch {
+        throw $_
+    }
+    if (Test-Path $envSettings.CodeFilePath) {
+        . $envSettings.CodeFilePath
     } else {
-        Write-Output "Unable to locate code file ($codeFileName) to test against!" -ForegroundColor Red
+        Write-Output "Unable to locate code file ($($envSettings.CodeFilePath)) to test against!" -ForegroundColor Red
     }
 }
 Describe "Write-EPRInstallLog" -Tag 'function' {
     It 'should have a parameter named Message' {
-        Get-Command "$commandName" | Should -HaveParameter Message
+        Get-Command "$($envSettings.CommandName)" | Should -HaveParameter Message
     }
     It 'that is not mandatory' {
-        Get-Command "$commandName" | Should -HaveParameter Message -Not -Mandatory
+        Get-Command "$($envSettings.CommandName)" | Should -HaveParameter Message -Not -Mandatory
     }
     It 'and accepts a string' {
-        Get-Command "$commandName" | Should -HaveParameter Message -Type String
+        Get-Command "$($envSettings.CommandName)" | Should -HaveParameter Message -Type String
     }
     It 'should have a parameter named InputObject' {
-        Get-Command "$commandName" | Should -HaveParameter InputObject
+        Get-Command "$($envSettings.CommandName)" | Should -HaveParameter InputObject
     }
     It 'that is not mandatory' {
-        Get-Command "$commandName" | Should -HaveParameter InputObject -Not -Mandatory
+        Get-Command "$($envSettings.CommandName)" | Should -HaveParameter InputObject -Not -Mandatory
     }
     It 'and accepts a Object' {
-        Get-Command "$commandName" | Should -HaveParameter InputObject -Type Object
+        Get-Command "$($envSettings.CommandName)" | Should -HaveParameter InputObject -Type Object
     }
     It 'should have a parameter named Level' {
-        Get-Command "$commandName" | Should -HaveParameter Level
+        Get-Command "$($envSettings.CommandName)" | Should -HaveParameter Level
     }
     It 'that is not mandatory' {
-        Get-Command "$commandName" | Should -HaveParameter Level -Not -Mandatory
+        Get-Command "$($envSettings.CommandName)" | Should -HaveParameter Level -Not -Mandatory
     }
     It 'it accepts a string' {
-        Get-Command "$commandName" | Should -HaveParameter Level -Type String
+        Get-Command "$($envSettings.CommandName)" | Should -HaveParameter Level -Type String
     }
     It 'and have a default value = INFO' {
-        Get-Command "$commandName" | Should -HaveParameter Level -DefaultValue INFO
+        Get-Command "$($envSettings.CommandName)" | Should -HaveParameter Level -DefaultValue INFO
     }
     It 'should have a parameter named LogName' {
-        Get-Command "$commandName" | Should -HaveParameter LogName
+        Get-Command "$($envSettings.CommandName)" | Should -HaveParameter LogName
     }
     It 'that is not mandatory' {
-        Get-Command "$commandName" | Should -HaveParameter LogName -Not -Mandatory
+        Get-Command "$($envSettings.CommandName)" | Should -HaveParameter LogName -Not -Mandatory
     }
     It 'and accepts a string' {
-        Get-Command "$commandName" | Should -HaveParameter LogName -Type String
+        Get-Command "$($envSettings.CommandName)" | Should -HaveParameter LogName -Type String
     }
     It 'should have a parameter named LogDirectory' {
-        Get-Command "$commandName" | Should -HaveParameter LogDirectory
+        Get-Command "$($envSettings.CommandName)" | Should -HaveParameter LogDirectory
     }
     It 'that is not mandatory' {
-        Get-Command "$commandName" | Should -HaveParameter LogDirectory -Not -Mandatory
+        Get-Command "$($envSettings.CommandName)" | Should -HaveParameter LogDirectory -Not -Mandatory
     }
     It 'and accepts a string' {
-        Get-Command "$commandName" | Should -HaveParameter LogDirectory -Type String
+        Get-Command "$($envSettings.CommandName)" | Should -HaveParameter LogDirectory -Type String
     }
 }
