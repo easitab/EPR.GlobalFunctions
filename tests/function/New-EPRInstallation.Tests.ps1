@@ -11,6 +11,34 @@ BeforeAll {
     } else {
         Write-Output "Unable to locate code file ($($envSettings.CodeFilePath)) to test against!" -ForegroundColor Red
     }
+    function Write-EPRInstallLog {
+        [CmdletBinding()]
+        param (
+            [Parameter(ValueFromPipeline,ParameterSetName='string',Position=0)]
+            [string]$Message,
+            [Parameter(ValueFromPipeline,ParameterSetName='object')]
+            [object]$InputObject,
+            [Parameter()]
+            [string]$Level = 'INFO',
+            [Parameter()]
+            [string]$LogName = 'EPRInstall',
+            [Parameter()]
+            [string]$LogDirectory
+        )
+    }
+    try {
+        $tempInstallDirectoryPath = Join-Path -Path $envSettings.ProjectDirectory -ChildPath 'installTemp'
+    } catch {
+        throw $_
+    }
+    if (Test-Path -Path $tempInstallDirectoryPath) {
+        throw "installTemp already exist, please remove it and its content"
+    }
+    try {
+        #$tempInstallDirectory = New-Item -Path $envSettings.ProjectDirectory -Name 'installTemp' -ItemType Directory
+    } catch {
+        throw $_
+    }
 }
 Describe "New-EPRInstallation" -Tag 'function','public' {
     It 'should have a parameter named InstanceID that is mandatory and accepts a string.' {
@@ -45,5 +73,14 @@ Describe "New-EPRInstallation" -Tag 'function','public' {
     }
     It 'help section should have EXAMPLES' {
         ((Get-Help "$($envSettings.CommandName)" -Full).EXAMPLES).Length | Should -BeGreaterThan 0
+    }
+}
+AfterAll {
+    try {
+        #Get-ChildItem -Path $tempInstallDirectoryPath -Recurse -File | Remove-Item -Force -Confirm:$false
+        #Get-ChildItem -Path $tempInstallDirectoryPath -Recurse -Directory | Remove-Item -Force -Confirm:$false
+        #Remove-Item -Path $tempInstallDirectoryPath -Force -Confirm:$false
+    } catch {
+        throw $_
     }
 }
