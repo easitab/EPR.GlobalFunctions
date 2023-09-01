@@ -11,17 +11,33 @@ begin {
 }
 process {
     try {
+        Write-Information "Installing and importing required modules"
         Install-Module -Name 'platyPS' -Scope CurrentUser -Force -ErrorAction Stop
         Import-Module 'platyPS' -Force -ErrorAction Stop
     } catch {
         throw $_
     }
-    $repoDirectory = Split-Path -Path $PSScriptRoot -Parent
-    $sourceDirectory = Join-Path $repoDirectory -ChildPath 'source'
+    try {
+        $repoDirectory = Split-Path -Path $PSScriptRoot -Parent
+    } catch {
+        Write-Warning "Unable to set repoDirectory"
+        throw $_
+    }
+    try {
+        $sourceDirectory = Join-Path -Path $repoDirectory -ChildPath 'source'
+    } catch {
+        Write-Warning "Unable to set sourceDirectory"
+        throw $_
+    }
     if (!(Test-Path -Path $sourceDirectory)) {
         throw "Cannot find $sourceDirectory"
     }
-    $tempBuildDirectory = Join-Path $repoDirectory -ChildPath 'local_temp'
+    try {
+        $tempBuildDirectory = Join-Path $repoDirectory -ChildPath 'local_temp'
+    } catch {
+        Write-Warning "Unable to set tempBuildDirectory"
+        throw $_
+    }
     if (Test-Path -Path $tempBuildDirectory) {
         try {
             Write-Information "Cleaning $tempBuildDirectory"
@@ -85,6 +101,7 @@ process {
             throw $_
         }
     }
+    Write-Information "New psm1 generated"
 }
 end {
     Write-Information "Script end"
