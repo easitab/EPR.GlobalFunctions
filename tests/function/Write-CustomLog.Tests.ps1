@@ -97,4 +97,20 @@ Describe "Write-CustomLog" -Tag 'function','public' {
     It 'help section should have EXAMPLES' {
         ((Get-Help "$($envSettings.CommandName)" -Full).EXAMPLES).Length | Should -BeGreaterThan 0
     }
+    It 'should throw with invalid input' {
+        {Write-CustomLog} | Should -Throw
+    }
+    It 'should not throw with valid input' {
+        {Write-CustomLog -Message "test" -LogName 'testLog' -LogDirectory (Join-Path -Path $envSettings.ProjectDirectory -ChildPath 'logs')} | Should -Not -Throw
+    }
+    It 'should produce a log file' {
+        {Get-ChildItem -Path (Join-Path -Path $envSettings.ProjectDirectory -ChildPath 'logs') -Recurse -Filter 'testLog*'} | Should -Not -BeNullOrEmpty
+    }
+}
+AfterAll {
+    try {
+        Get-ChildItem -Path (Join-Path -Path $envSettings.ProjectDirectory -ChildPath 'logs') -Recurse -Filter 'testLog*' | Remove-Item -Confirm:$false
+    } catch {
+        throw $_
+    }
 }
