@@ -22,6 +22,11 @@ BeforeAll {
             [string]$Level
         )
     }
+    try {
+        $settings = Get-SettingsFromFile -Filename 'Get-SettingsFromFile' -Path $envSettings.TestDataDirectory
+    } catch {
+        throw $_
+    }
 }
 Describe "Get-SettingsFromFile" -Tag 'function','public' {
     It 'should have a parameter named Filename' {
@@ -53,5 +58,17 @@ Describe "Get-SettingsFromFile" -Tag 'function','public' {
     }
     It 'should return a PSCustomObjec' {
         Get-SettingsFromFile -Filename 'Get-SettingsFromFile' -Path $envSettings.TestDataDirectory | Should -BeOfType PSCustomObject
+    }
+    It "property value for LogOutputLevel should be 'VERBOSE'" {
+        $settings.LogOutputLevel | Should -BeExactly 'VERBOSE'
+    }
+    It "property value for setting2 should be 'globalValueDetermined by template'" {
+        $settings.setting2 | Should -BeExactly 'globalValueDetermined by template'
+    }
+    It "property value for setting6 should be null" {
+        $settings.setting6 | Should -BeNullOrEmpty
+    }
+    It "property value for setting7 should be 'scriptValue7'" {
+        $settings.setting7 | Should -BeExactly 'scriptValue7'
     }
 }
