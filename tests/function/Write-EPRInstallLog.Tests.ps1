@@ -11,8 +11,26 @@ BeforeAll {
     } else {
         Write-Output "Unable to locate code file ($($envSettings.CodeFilePath)) to test against!" -ForegroundColor Red
     }
+    function Write-Error {
+        param (
+            [Parameter(Position=0)]
+            $Input
+        )
+    }
+    function Write-Warning {
+        param (
+            [Parameter(Position=0)]
+            $Input
+        )
+    }
+    function Write-Information {
+        param (
+            [Parameter(Position=0)]
+            $Input
+        )
+    }
 }
-Describe "Write-EPRInstallLog" -Tag 'function' {
+Describe "Write-EPRInstallLog" -Tag 'function','private' {
     It 'should have a parameter named Message' {
         Get-Command "$($envSettings.CommandName)" | Should -HaveParameter Message
     }
@@ -60,5 +78,39 @@ Describe "Write-EPRInstallLog" -Tag 'function' {
     }
     It 'and accepts a string' {
         Get-Command "$($envSettings.CommandName)" | Should -HaveParameter LogDirectory -Type String
+    }
+    It 'help section should have a SYNOPSIS' {
+        ((Get-Help "$($envSettings.CommandName)" -Full).SYNOPSIS).Length | Should -BeGreaterThan 0
+    }
+    It 'help section should have a DESCRIPTION' {
+        ((Get-Help "$($envSettings.CommandName)" -Full).DESCRIPTION).Length | Should -BeGreaterThan 0
+    }
+    It 'help section should have EXAMPLES' {
+        ((Get-Help "$($envSettings.CommandName)" -Full).EXAMPLES).Length | Should -BeGreaterThan 0
+    }
+    It 'should not throw with valid input - INFO' {
+        {Write-EPRInstallLog -Message "test" -LogName 'INFO_epr' -LogDirectory (Join-Path -Path $envSettings.ProjectDirectory -ChildPath 'logs')} | Should -Not -Throw
+    }
+    It 'should produce a log file - INFO' {
+        {Get-ChildItem -Path (Join-Path -Path $envSettings.ProjectDirectory -ChildPath 'logs') -Recurse -Filter 'INFO_epr*'} | Should -Not -BeNullOrEmpty
+    }
+    It 'should not throw with valid input - WARN' {
+        {Write-EPRInstallLog -Message "test" -LogName 'warn_epr' -LogDirectory (Join-Path -Path $envSettings.ProjectDirectory -ChildPath 'logs')} | Should -Not -Throw
+    }
+    It 'should produce a log file - WARN' {
+        {Get-ChildItem -Path (Join-Path -Path $envSettings.ProjectDirectory -ChildPath 'logs') -Recurse -Filter 'warn_epr*'} | Should -Not -BeNullOrEmpty
+    }
+    It 'should not throw with valid input - ERROR' {
+        {Write-EPRInstallLog -Message "test" -LogName 'error_epr' -LogDirectory (Join-Path -Path $envSettings.ProjectDirectory -ChildPath 'logs')} | Should -Not -Throw
+    }
+    It 'should produce a log file - ERROR' {
+        {Get-ChildItem -Path (Join-Path -Path $envSettings.ProjectDirectory -ChildPath 'logs') -Recurse -Filter 'error_epr*'} | Should -Not -BeNullOrEmpty
+    }
+}
+AfterAll {
+    try {
+        Get-ChildItem -Path (Join-Path -Path $envSettings.ProjectDirectory -ChildPath 'logs') -Recurse -Filter '*_epr_*' | Remove-Item -Confirm:$false
+    } catch {
+        throw $_
     }
 }

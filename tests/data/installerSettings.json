@@ -1,0 +1,59 @@
+{
+    "Parameters": {
+      "InstanceID": null,
+      "InstallLocation": "D:\\",
+      "SystemName": "Test",
+      "Port": 8085,
+      "IgnoreDirectoryStructure": "false",
+      "TomcatXmx": 512,
+      "SendInstallationDetailsToEasit": "true"
+    },
+    "easitRootDirectoryName": "Easit",
+    "easitSubFolders": [
+      "_Backup"
+    ],
+    "systemSubFolders": [
+      "config",
+      "scripts",
+      "tomcat"
+    ],
+    "systemSubFoldersFromArchive": [
+      "config",
+      "scripts",
+      "tomcat"
+    ],
+    "tomcatSubFolders": [
+      "jre"
+    ],
+    "tomcatSubFoldersFromArchive": [
+      "jre"
+    ],
+    "tomcatFilesToReplaceSystemPortIn": [
+      "server.xml"
+    ],
+    "configFilesToReplaceSystemRootIn": [
+      "application.properties"
+    ],
+    "configFilesToReplacePasswordIn": [
+      "users.properties"
+    ],
+    "configFilesToReplacepwshExecutableIn": [
+      "application.properties"
+    ],
+    "FeedbackSettings": {
+      "url": "https:/test.easit.com/easit/integration-api/items",
+      "apikey": "ZgA5ADgAYgAyADIAYgBjADgAMABlADUANwBhAGEANwA1ADkAZABhAGIAMwBlADgANABmAGQANgAzAGMAOQA4ADkAYgA4ADEAMwBjADIAYQA2ADAANQA2ADEAYgAwAGMAYwBkADQANABmADMAZQA1AGUAYQBiADEAZgBiAGMAMAA=",
+      "postBody": {
+        "importHandlerIdentifier": "eprInstallationFeedback",
+        "properties": [
+          "InstanceID",
+          "OSVersion",
+          "SystemRootDirectory",
+          "TomcatRootDirectory",
+          "TomcatVersion",
+          "JavaVersion",
+          "ServiceName"
+        ]
+      }
+    }
+  }

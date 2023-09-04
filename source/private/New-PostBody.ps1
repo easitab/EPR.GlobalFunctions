@@ -5,20 +5,39 @@ function New-PostBody {
     .DESCRIPTION
         This functions takes a "settings object" as input and uses the settings there to create a json body that can be used with Invoke-RestMethod.
     .EXAMPLE
-        PS> $body = New-PostBody -InstallerSettings $installerSettings
+        New-PostBody -InstallerSettings $installerSettings
+        {
+            "importHandlerIdentifier": "",
+            "itemToImport": [
+                {
+                    "property": [
+                        {
+                            "name": "Property1",
+                            "content": null
+                        },
+                        {
+                            "name": "Property2",
+                            "content": null
+                        }
+                    ],
+                    "id": "b04cf69223604fa58a03500a3d78002f",
+                    "uid": "b04cf69223604fa58a03500a3d78002f"
+                }
+            ]
+        }
+    .EXAMPLE
+        $body = New-PostBody -InstallerSettings $installerSettings
+        $restParams = @{
+            Method = 'POST'
+            Uri = 'https://urltoEasitGO.com/integration-api/items'
+            Body = $body
+            TimeoutSec = 30
+            ContentType = "application/json"
+            Headers = $headers
+        }
+        Invoke-RestMethod @restParams
     .PARAMETER InstallerSettings
         Settings object holding a FeedbackSettings.postBody property with an array of properties and a importHandlerIdentifier.
-
-        ```json
-            "FeedbackSettings":{
-                "postBody":{
-                    "importHandlerIdentifier":"",
-                    "properties":["Property1","Property2"]
-                }
-            }
-        ```
-    .INPUTS
-        [PSCustomObject]
     .OUTPUTS
         JSON formatted string.
     #>

@@ -104,67 +104,67 @@ function Set-EPREnvironment {
                 throw $_
             }
         }
-        if (Test-Path $epr_modulesDirectory) {
-            if ($Modules -ge 1 -and !($Modules -eq 'ALL')) {
-                foreach ($module in $modules) {
-                    $modulName = $module.Trim()
-                    $modulePath = Join-Path $epr_modulesDirectory -ChildPath "$modulName"
-                    try {
-                        Write-Information "Importing $modulePath" -InformationAction Continue
-                        Import-Module "$modulePath"
-                    } catch {
-                        Write-Warning $_
+        if (!($null -eq $Modules)) {
+            if (Test-Path $epr_modulesDirectory) {
+                if ($Modules -ge 1 -and !($Modules -eq 'ALL')) {
+                    foreach ($module in $modules) {
+                        $modulName = $module.Trim()
+                        $modulePath = Join-Path $epr_modulesDirectory -ChildPath "$modulName"
+                        try {
+                            Write-Verbose "Importing $modulePath"
+                            Import-Module "$modulePath"
+                        } catch {
+                            Write-Warning $_
+                        }
                     }
-                }
-            } elseif ($Modules -eq 'ALL') {
-                $modules = Get-ChildItem -Path $epr_modulesDirectory -Directory
-                foreach ($module in $modules) {
-                    try {
-                        Write-Information "Importing $module" -InformationAction Continue
-                        Import-Module "$module"
-                    } catch {
-                        Write-Warning $_
+                } elseif ($Modules -eq 'ALL') {
+                    $modules = Get-ChildItem -Path $epr_modulesDirectory -Directory
+                    foreach ($module in $modules) {
+                        try {
+                            Write-Verbose "Importing $module"
+                            Import-Module "$module"
+                        } catch {
+                            Write-Warning $_
+                        }
                     }
+                } else {
+                    Write-Warning "Unknown parameter input for Modules"
                 }
-            } elseif ($null -eq $Modules) {
-                Write-Information "No input for parameter Modules" -InformationAction Continue
-            }else {
-                Write-Warning "Unknown parameter input for Modules"
+            } else {
+                Write-Warning "Unable to find epr_modulesDirectory ($epr_modulesDirectory)"
             }
-        } else {
-            Write-Warning "Unable to find epr_modulesDirectory ($epr_modulesDirectory)"
         }
-        if (Test-Path $epr_customModulesDirectory) {
-            if ($CustomModules -ge 1 -and !($CustomModules -eq 'ALL')) {
-                foreach ($customModule in $CustomModules) {
-                    $customModuleName = $customModule.Trim()
-                    $customModulePath = Join-Path $epr_customModulesDirectory -ChildPath "${customModuleName}.psm1"
-                    try {
-                        Write-Information "Importing $customModulePath" -InformationAction Continue
-                        Import-Module "$customModulePath"
-                    } catch {
-                        Write-Warning $_
+        if (!($null -eq $CustomModules)) {
+            if (Test-Path $epr_customModulesDirectory) {
+                if ($CustomModules -ge 1 -and !($CustomModules -eq 'ALL')) {
+                    foreach ($customModule in $CustomModules) {
+                        $customModuleName = $customModule.Trim()
+                        $customModulePath = Join-Path $epr_customModulesDirectory -ChildPath "${customModuleName}.psm1"
+                        try {
+                            Write-Verbose "Importing $customModulePath"
+                            Import-Module "$customModulePath"
+                        } catch {
+                            Write-Warning $_
+                        }
                     }
-                }
-            } elseif ($CustomModules -eq 'ALL') {
-                $CustomModules = Get-ChildItem -Path $epr_customModulesDirectory -Recurse -Include '*.psm1'
-                foreach ($customModule in $CustomModules) {
-                    try {
-                        Write-Information "Importing $customModule" -InformationAction Continue
-                        Import-Module "$customModule"
-                    } catch {
-                        Write-Warning $_
+                } elseif ($CustomModules -eq 'ALL') {
+                    $CustomModules = Get-ChildItem -Path $epr_customModulesDirectory -Recurse -Include '*.psm1'
+                    foreach ($customModule in $CustomModules) {
+                        try {
+                            Write-Verbose "Importing $customModule"
+                            Import-Module "$customModule"
+                        } catch {
+                            Write-Warning $_
+                        }
                     }
+                } else {
+                    Write-Warning "Unknown parameter input for CustomModules"
                 }
-            } elseif ($null -eq $CustomModules) {
-                Write-Information "No input for parameter CustomModules" -InformationAction Continue
-            }else {
-                Write-Warning "Unknown parameter input for CustomModules"
+            } else {
+                Write-Warning "Unable to find epr_customModulesDirectory ($epr_customModulesDirectory)"
             }
-        } else {
-            Write-Warning "Unable to find epr_customModulesDirectory ($epr_customModulesDirectory)"
         }
-        Write-Information "Environment setup complete" -InformationAction Continue
+        Write-Verbose "Environment setup complete"
     }
     end {
         Write-Verbose "$($MyInvocation.MyCommand) end"

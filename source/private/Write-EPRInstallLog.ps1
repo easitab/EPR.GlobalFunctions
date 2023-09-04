@@ -8,6 +8,12 @@ function Write-EPRInstallLog {
         Two different logging techniques are used depending on the input:
         "$FormattedDate - $Level - $Message" | Out-File
         $InputObject | Out-File
+    .EXAMPLE
+        $loggingParameters = @{
+            LogDirectory = "$installPackagePath"
+            LogLevel = 'INFO'
+        }
+        Write-EPRInstallLog -Message "-- Installation start --" @loggingParameters
     .PARAMETER Message
         Used for string input and will be written to log file as: DATE TIME - LEVEL - MESSAGE
     .PARAMETER InputObject
