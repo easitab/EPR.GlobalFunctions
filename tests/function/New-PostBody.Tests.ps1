@@ -47,7 +47,10 @@ Describe "New-PostBody" -Tag 'function','private' {
     It 'should return a string' {
         $return | Should -BeOfType [System.String]
     }
-    It 'should return a string with a length of 370' {
-        $return.Length | Should -BeExactly 370
+    It 'should return a string with a length greater than 350 (non Windows)' {
+        $return.Length | Should -BeGreaterThan 350
+    }
+    It 'should return a string with a length less than 371' {
+        $return.Length | Should -BeLessThan 371
     }
 }
