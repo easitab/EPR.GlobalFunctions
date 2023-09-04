@@ -11,6 +11,22 @@ BeforeAll {
     } else {
         Write-Output "Unable to locate code file ($($envSettings.CodeFilePath)) to test against!" -ForegroundColor Red
     }
+    $installerSettings = [PSCustomObject]@{
+        FeedbackSettings = @{
+            postBody = @{
+                importHandlerIdentifier = ""
+                properties = @(
+                    "Property1",
+                    "Property2"
+                )
+            }
+        }
+    }
+    try {
+        $return = New-PostBody -InstallerSettings $installerSettings
+    } catch {
+        throw $_
+    }
 }
 Describe "New-PostBody" -Tag 'function','private' {
     It 'should have a parameter named InstallerSettings that is mandatory and accepts a PSCustomObject.' {
@@ -24,5 +40,14 @@ Describe "New-PostBody" -Tag 'function','private' {
     }
     It 'help section should have EXAMPLES' {
         ((Get-Help "$($envSettings.CommandName)" -Full).EXAMPLES).Length | Should -BeGreaterThan 0
+    }
+    It 'should not throw with valid input' {
+        {New-PostBody -InstallerSettings $installerSettings} | Should -Not -Throw
+    }
+    It 'should return a string' {
+        $return | Should -BeOfType [System.String]
+    }
+    It 'should return a string with a length of 370' {
+        $return.Length | Should -BeExactly 370
     }
 }
