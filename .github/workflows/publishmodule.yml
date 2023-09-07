@@ -30,3 +30,10 @@ jobs:
       - name: Publish module and generate docs
         shell: pwsh
         run: ./build/publishmodule.ps1 -CompanyName "${{ vars.COMPANYNAME }}" -ModuleName "${{ vars.MODULENAME }}" -Tag "${{ steps.get-latest-tag.outputs.tag }}" -PSGalleryKey "${{ secrets.PSGALLERYKEY }}" -GitHubBaseURI "${{ vars.GITHUBBASEURI }}" -TechspaceBaseURI "${{ vars.TECHSPACEBASEURI }}" -ModuleDescription "${{ vars.PSMODULEDESCRIPTION }}" -ModulePSVersion "${{ vars.PSMODULEPOWERSHELLVERSION }}" -ModuleAuthor "${{ vars.MODULEAUTHOR }}" -Copyright "${{ vars.COPYRIGHT }}"
+  commitDocs:
+    name: Commit generated docs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: EndBug/add-and-commit@v9
+        with:
+          default_author: github_actions
