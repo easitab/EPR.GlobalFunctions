@@ -21,6 +21,7 @@ function Read-StringAsUTF8 {
         [System.String](https://learn.microsoft.com/en-us/dotnet/api/system.string)
     #>
     [CmdletBinding()]
+    [OutputType('System.String')]
     param (
         [Parameter(Mandatory,Position=0)]
         [String]$InputString
@@ -30,7 +31,6 @@ function Read-StringAsUTF8 {
     }
     process {
         $enc = [System.Text.Encoding]::UTF8
-        [System.Text.Encoding]::GetEncoding($InputString)
         try {
             $stringBytes = $enc.GetBytes($InputString)
         } catch {
