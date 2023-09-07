@@ -14,19 +14,19 @@ BeforeAll {
     function Write-Error {
         param (
             [Parameter(Position=0)]
-            $Input
+            $MyInput
         )
     }
     function Write-Warning {
         param (
             [Parameter(Position=0)]
-            $Input
+            $MyInput
         )
     }
     function Write-Information {
         param (
             [Parameter(Position=0)]
-            $Input
+            $MyInput
         )
     }
 }
