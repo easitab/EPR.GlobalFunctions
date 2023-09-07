@@ -1,6 +1,6 @@
-# Easit.PR.GlobalFunctions
+# Easit.ProcessRunner.GlobalFunctions
 
-This is the repository for the PowerShell module included with Easit ProcessRunner.
+This is the repository for the companion PowerShell module for Easit ProcessRunner. The goal for this module is to provide helpful functions to use in end users scripts.
 
 ## Project status
 
