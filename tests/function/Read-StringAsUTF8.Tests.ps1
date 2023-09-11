@@ -17,7 +17,7 @@ BeforeAll {
         throw $_
     }
 }
-Describe "Read-StringAsUTF8" -Tag 'function','private' {
+Describe "Read-StringAsUTF8" -Tag 'function','public' {
     It 'should have a parameter named InputString that is mandatory and accepts a string.' {
         Get-Command "$($envSettings.CommandName)" | Should -HaveParameter InputString -Mandatory -Type [System.String]
     }
