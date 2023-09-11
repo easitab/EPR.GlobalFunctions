@@ -13,12 +13,12 @@ function Write-CustomLog {
         *Write-CustomLog* uses *Out-File* for writing output to a file and then redirects either *Message*
         or *InputObject* to the stream corresponding with the value of *Level*.
 
-        If no input is provided for *-LogName*, *-LogDirectory* nor *-RotationInterval* the function will look for a variable named LoggerSettings in the global scope with a property or key with the same name and use that value. 
-        
+        If no input is provided for *-LogName*, *-LogDirectory* nor *-RotationInterval* the function will look for a variable named LoggerSettings in the global scope with a property or key with the same name and use that value.
+
         If no input is provided for *-LogName*, the name of the caller script is used as input.
-        
+
         If no input is provided for *-LogDirectory*, logs will be written to $pwd.
-        
+
         If no input is provided for *-RotationInterval*, 30 will used as value.
     .PARAMETER Message
         String that will be written to file and stream.
@@ -92,77 +92,96 @@ function Write-CustomLog {
         [Parameter()]
         [switch]$Rotate
 	)
-    $globalLoggerSettings = $global:LoggerSettings
-	if ([string]::IsNullOrWhiteSpace($LogName)) {
-        if (!([string]::IsNullOrWhiteSpace($globalLoggerSettings.LogName))) {
-            $LogName = $globalLoggerSettings.LogName
-        } else {
-            $callStack = Get-PSCallStack
-            $LogName = $callStack[1].Command.TrimEnd('\.ps1')
-        }
-	}
-    if ([string]::IsNullOrWhiteSpace($OutputLevel)) {
-        if (!([string]::IsNullOrWhiteSpace($globalLoggerSettings.OutputLevel))) {
-            $OutputLevel = $globalLoggerSettings.OutputLevel
-        } else {
-            $OutputLevel = 'INFO'
-        }
-	}
-	if ([string]::IsNullOrWhiteSpace($Level)) {
-        $Level = 'INFO'
-	}
-	if ([string]::IsNullOrWhiteSpace($LogDirectory)) {
-        if (!([string]::IsNullOrWhiteSpace($globalLoggerSettings.LogDirectory))) {
-            $LogDirectory = $globalLoggerSettings.LogDirectory
-        } else {
-            $LogDirectory = $easitPRlogsDirectory
-        }
+    begin {
+        Write-Verbose "$($MyInvocation.MyCommand) begin"
     }
-	if ([string]::IsNullOrWhiteSpace("$RotationInterval")) {
-        if (!([string]::IsNullOrWhiteSpace("$($globalLoggerSettings.RotationInterval)"))) {
-            $LogDirectory = $globalLoggerSettings.RotationInterval
-        } else {
-            $RotationInterval = 30
+    process {
+        if (!($null -eq (Get-Variable -Name 'LoggerSettings' -ErrorAction 'SilentlyContinue'))) {
+            $globalLoggerSettings = Get-Variable -Name 'LoggerSettings' -ValueOnly
         }
-	}
-	$LogLevelTable = @{
-        ERROR = 1
-        WARN = 2
-        INFO = 3
-        VERBOSE = 4
-        DEBUG = 5
-    }
-	$today = Get-Date -Format "yyyyMMdd"
-	$LogName = "${LogName}_${today}.log"
-	$logOutputPath = Join-Path -Path "$LogDirectory" -ChildPath "$LogName"
-    if ($Rotate) {
-        $logArchiveFiles = Get-ChildItem -Path "$LogDirectory" -Recurse  -Include "*${logname}*.log"
-        foreach ($logArchiveFile in $logArchiveFiles) {
-            if ($logArchiveFile.CreationTime -lt ((Get-Date).AddDays(-$RotationInterval))) {
-                "$($logArchiveFile.Name) is older than $RotationInterval days, removing.." | Out-File -FilePath "$logOutputPath" -Encoding UTF8 -Append -NoClobber
-				try {
-					Remove-Item "$($logArchiveFile.FullName)" -Force
-				} catch {
-					Write-Error $_
-					exit
-				}
-                "$FormattedDate - INFO - Removed $($logArchiveFile.Name)" | Out-File -FilePath "$logOutputPath" -Encoding UTF8 -Append -NoClobber
+        if (!($null -eq (Get-Variable -Name 'epr_LoggerSettings' -ErrorAction 'SilentlyContinue'))) {
+            $globalLoggerSettings = Get-Variable -Name 'epr_LoggerSettings' -ValueOnly
+        }
+        if ([string]::IsNullOrWhiteSpace($LogName)) {
+            if (!([string]::IsNullOrWhiteSpace($globalLoggerSettings.LogName))) {
+                $LogName = $globalLoggerSettings.LogName
+            } else {
+                $callStack = Get-PSCallStack
+                $LogName = $callStack[1].Command.TrimEnd('\.ps1')
+            }
+        }
+        if ([string]::IsNullOrWhiteSpace($OutputLevel)) {
+            if (!([string]::IsNullOrWhiteSpace($globalLoggerSettings.OutputLevel))) {
+                $OutputLevel = $globalLoggerSettings.OutputLevel
+            } else {
+                $OutputLevel = 'INFO'
+            }
+        }
+        if ([string]::IsNullOrWhiteSpace($Level)) {
+            $Level = 'INFO'
+        }
+        if ([string]::IsNullOrWhiteSpace($LogDirectory)) {
+            if (!([string]::IsNullOrWhiteSpace($globalLoggerSettings.LogDirectory))) {
+                $LogDirectory = $globalLoggerSettings.LogDirectory
+            } else {
+                $LogDirectory = $easitPRlogsDirectory
+            }
+        }
+        if ([string]::IsNullOrWhiteSpace("$RotationInterval")) {
+            if (!([string]::IsNullOrWhiteSpace("$($globalLoggerSettings.RotationInterval)"))) {
+                $LogDirectory = $globalLoggerSettings.RotationInterval
+            } else {
+                $RotationInterval = 30
+            }
+        }
+        $LogLevelTable = @{
+            ERROR = 1
+            WARN = 2
+            INFO = 3
+            VERBOSE = 4
+            DEBUG = 5
+        }
+        $today = Get-Date -Format "yyyyMMdd"
+        $LogName = "${LogName}_${today}.log"
+        $logOutputPath = Join-Path -Path "$LogDirectory" -ChildPath "$LogName"
+        $outfileParams = @{
+            FilePath = "$logOutputPath"
+            Encoding = 'UTF8'
+            Append = $true
+            NoClobber = $true
+        }
+        if ($Rotate) {
+            $logArchiveFiles = Get-ChildItem -Path "$LogDirectory" -Recurse  -Include "*${logname}*.log"
+            foreach ($logArchiveFile in $logArchiveFiles) {
+                if ($logArchiveFile.CreationTime -lt ((Get-Date).AddDays(-$RotationInterval))) {
+                    "$($logArchiveFile.Name) is older than $RotationInterval days, removing.." | Out-File @outfileParams
+                    try {
+                        Remove-Item "$($logArchiveFile.FullName)" -Force
+                    } catch {
+                        Write-Error $_
+                        exit
+                    }
+                    "$FormattedDate - INFO - Removed $($logArchiveFile.Name)" | Out-File @outfileParams
+                }
+            }
+        }
+        if ($LogLevelTable."$Level" -le $LogLevelTable."$OutputLevel") {
+            $FormattedDate = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+            $PSStyle.OutputRendering = 'PlainText'
+            if (!(Test-Path $logOutputPath)) {
+                $NewLogFile = New-Item "$logOutputPath" -Force -ItemType File
+                "$FormattedDate - INFO - Created $NewLogFile" | Out-File @outfileParams
+            }
+            if ($Message) {
+                "$FormattedDate - $Level - $Message" | Out-File @outfileParams
+            }
+            if ($InputObject) {
+                "$FormattedDate - $Level - InputObject" | Out-File @outfileParams
+                $InputObject | Out-File @outfileParams
             }
         }
     }
-    if ($LogLevelTable."$Level" -le $LogLevelTable."$OutputLevel") {
-        $FormattedDate = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-        $PSStyle.OutputRendering = 'PlainText'
-        if (!(Test-Path $logOutputPath)) {
-            $NewLogFile = New-Item "$logOutputPath" -Force -ItemType File
-            "$FormattedDate - INFO - Created $NewLogFile" | Out-File -FilePath "$logOutputPath" -Encoding UTF8 -Append -NoClobber
-        }
-        if ($Message) {
-            "$FormattedDate - $Level - $Message" | Out-File -FilePath "$logOutputPath" -Encoding UTF8 -Append -NoClobber
-        }
-        if ($InputObject) {
-            "$FormattedDate - $Level - InputObject" | Out-File -FilePath "$logOutputPath" -Encoding UTF8 -Append -NoClobber
-            $InputObject | Out-File -FilePath "$logOutputPath" -Encoding UTF8 -Append -NoClobber
-        }
+    end {
+        Write-Verbose "$($MyInvocation.MyCommand) end"
     }
 }

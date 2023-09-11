@@ -1,0 +1,40 @@
+{
+    "importHandlerIdentifier":"test",
+    "itemToImport":[
+        {
+            "property":[
+                {
+                    "content":"Arbetsstation bärbar avancerad",
+                    "name":"assetCollection",
+                    "rawValue":null
+                },{
+                    "content":"klåra",
+                    "name":"samAccountName",
+                    "rawValue":null
+                },{
+                    "content":"CN=testsson\\, test,OU=CAB,OU=TR,OU=SE,OU=NC,OU=Users,OU=CF,DC=camfil,DC=net",
+                    "name":"dn",
+                    "rawValue":null
+                }
+            ],
+            "attachment":[
+                {
+                    "value":"base64code",
+                    "name":"index.jpg",
+                    "contentId":null
+                }
+            ],
+            "id":"18830:2",
+            "uid":"23468"
+        }
+    ],
+    "genericRequestProperty":[
+        {
+            "content":"test",
+            "name":"identifier"
+        },{
+            "content":"MCwCFGiffbCptZhwkJZzOEEyugGcDS+oAhQAnrU6tFIUydmg73lf7FrEZco7HA==",
+            "name":"initializedByXmlExport"
+        }
+    ]
+}

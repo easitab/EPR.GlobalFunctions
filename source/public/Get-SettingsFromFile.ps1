@@ -12,18 +12,18 @@ function Get-SettingsFromFile {
         3. Global object in *globalSettings.json*.
 
         Before returning the PSCustomObject all settings values are matched against the string '__globalValue__'. If there is a match the value for the global settings with the same name will be used.
+    .EXAMPLE
+        Get-SettingsFromFile
+
+        In this example we are using the function in a scriptfile named testService.ps1. All settings from 'testService.json' (if exist) and the testService object in 'globalSettings' will be added to the returning PSCustomObject.
     .PARAMETER Filename
         Name of file containing script specific settings.
     .PARAMETER Path
         Path to directory where settings files are located.
-    .EXAMPLE
-        PS> Get-SettingsFromFile
-
-        In this example we are using the function in a scriptfile named testService.ps1. All settings from 'testService.json' (if exist) and the testService object in 'globalSettings' will be added to the returning PSCustomObject.
     .INPUTS
         None. You cannot pipe objects to Get-SettingsFromFile.
     .OUTPUTS
-        [PSCustomObject]
+        [PSCustomObject](https://learn.microsoft.com/en-us/dotnet/api/system.management.automation.pscustomobject)
     #>
     [CmdletBinding()]
     [OutputType([PSCustomObject])]
@@ -33,18 +33,16 @@ function Get-SettingsFromFile {
         [Parameter()]
         [string]$Path
     )
-    
     begin {
         Write-Verbose "$($MyInvocation.MyCommand) begin"
     }
-    
     process {
         if ([string]::IsNullOrEmpty($Filename)) {
             $callStack = Get-PSCallStack
             $Filename = $callStack[1].Command.TrimEnd('\.ps1')
         }
         if ([string]::IsNullOrEmpty($Path)) {
-            $Path = $easitPRscriptSettingsDirectory
+            $Path = $epr_scriptSettingsDirectory
         }
         if (!(Test-Path -Path $Path)) {
             throw "Unable to find $Path"
@@ -89,7 +87,7 @@ function Get-SettingsFromFile {
             } catch {
                 throw $_
             }
-        } 
+        }
         if ($settingsFile.Count -gt 1) {
             throw "Multiple setting files found"
         }
@@ -138,7 +136,6 @@ function Get-SettingsFromFile {
         }
         $returnObject
     }
-    
     end {
         Write-Verbose "$($MyInvocation.MyCommand) end"
     }

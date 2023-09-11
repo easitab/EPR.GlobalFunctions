@@ -1,20 +1,18 @@
-# EPR.GlobalFunctions
+# Easit.ProcessRunner.GlobalFunctions
 
-This is the repository for the PowerShell module included with Easit Process Runner.
+This is the repository for the companion PowerShell module for Easit ProcessRunner. The goal for this module is to provide helpful functions to use in end users scripts.
 
 ## Project status
 
 [![Test source with PSSA and Pester](https://github.com/easitab/EPR.GlobalFunctions/actions/workflows/source-run-pssa-and-pester.yml/badge.svg)](https://github.com/easitab/EPR.GlobalFunctions/actions/workflows/source-run-pssa-and-pester.yml)
 
-[![Test tests with Pester](https://github.com/easitab/EPR.GlobalFunctions/actions/workflows/tests-run-pester.yml/badge.svg)](https://github.com/easitab/EPR.GlobalFunctions/actions/workflows/tests-run-pester.yml)
-
 [![Release notes](https://github.com/easitab/EPR.GlobalFunctions/actions/workflows/release-drafter.yml/badge.svg)](https://github.com/easitab/EPR.GlobalFunctions/actions/workflows/release-drafter.yml)
 
-[![Publish module](https://github.com/easitab/EPR.GlobalFunctions/actions/workflows/publishmodule.yml/badge.svg)](https://github.com/easitab/EPR.GlobalFunctions/actions/workflows/publishmodule.yml)
+[![Publish module](https://github.com/easitab/EPR.GlobalFunctions/actions/workflows/publishmodule.yml/badge.svg?branch=main)](https://github.com/easitab/EPR.GlobalFunctions/actions/workflows/publishmodule.yml)
 
 ## Docs & Introduction
 
-All documentation regarding EPR.GlobalFunctions can be found [here](https://docs.easitgo.com/techspace/psmodules/intro/) and an "intro" to Easit Process Runner can be found [here](https://docs.easitgo.com/techspace/easitgo/epr/v1/intro/)
+All documentation regarding Easit.PR.GlobalFunctions can be found [here](https://docs.easitgo.com/techspace/psmodules/) and an "intro" to Easit ProcessRunner can be found [here](https://docs.easitgo.com/techspace/easitgo/epr/v1/intro/)
 
 ## Support & Questions
 

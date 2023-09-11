@@ -20,7 +20,7 @@ function Convert-OUString {
     .PARAMETER AsPSCustomObject
         Tells the function to return a PSCustomObject instead of a hashtable
     .EXAMPLE
-        PS> Convert-OUString -OUString "uid=john.doe,ou=People,dc=example,dc=com"
+        Convert-OUString -OUString "uid=john.doe,ou=People,dc=example,dc=com"
         Name                           Value
         ----                           -----
         OUPath                         ou=People,dc=example,dc=com
@@ -31,13 +31,13 @@ function Convert-OUString {
 
         In this example we are converting a DN to a hashtable.
     .EXAMPLE
-        PS> Convert-OUString -OUString "uid=john.doe,ou=People,dc=example,dc=com" -AsPSCustomObject
+        Convert-OUString -OUString "uid=john.doe,ou=People,dc=example,dc=com" -AsPSCustomObject
         OUPath : ou=People,dc=example,dc=com
         dc1    : com
         dc2    : example
         ou1    : People
         uid1   : john.doe
-        
+
         In this example we are converting a DN to a PSCustomObject.
     .INPUTS
         None. You cannot pipe objects to Convert-OUString.
@@ -66,7 +66,7 @@ function Convert-OUString {
             $escapeCharacterInCN = $true
         }
         do {
-            $Matches = $null
+            #$Matches = $null
             $null = $OUString -match ',?([A-Za-z]{2,3})=([a-zA-Z0-9-_\.\s]*)$'
             try {
                 $levelName = $Matches[1]

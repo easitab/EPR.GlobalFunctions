@@ -7,6 +7,12 @@ function New-EPRInstallation {
         This function will first look for settings in *.\lib\installerSettings.json* relative to path provided as *FromDirectory*.
         The settings in this file will be replaced in memory with any input provided with *InstallLocation*, *SystemName*, *Port* and *TomcatXmx*.
         Settings provided via a parameter will be used over settings in *installerSettings.json*
+    .EXAMPLE
+        PS> New-EPRInstallation -InstanceID ABC123 -FromDirectory '.\EPRInstaller-1.0.0'
+    .EXAMPLE
+        PS> New-EPRInstallation -InstanceID ABC123 -FromDirectory '.\EPRInstaller-1.0.0' -InstallLocation 'E:\'
+    .EXAMPLE
+        PS> New-EPRInstallation -InstanceID ABC123 -FromDirectory '.\EPRInstaller-1.0.0' -InstallLocation 'F:\' -Port 9005
     .PARAMETER InstanceID
         ID from Easit AB representing the customers instance.
     .PARAMETER FromDirectory
@@ -25,14 +31,11 @@ function New-EPRInstallation {
         With *IgnoreDirectoryStructure* provided: D:\EPR-[SystemName]
     .PARAMETER DoNotSendInstallationDetailsToEasit
         Specifies if the installer should NOT try to send server and installations details to Easit upon completed installation.
-    .EXAMPLE
-        PS> New-EPRInstallation -InstanceID ABC123 -FromDirectory '.\EPRInstaller-1.0.0'
-    .EXAMPLE
-        PS> New-EPRInstallation -InstanceID ABC123 -FromDirectory '.\EPRInstaller-1.0.0' -InstallLocation 'E:\'
-    .EXAMPLE
-        PS> New-EPRInstallation -InstanceID ABC123 -FromDirectory '.\EPRInstaller-1.0.0' -InstallLocation 'F:\' -Port 9005
+    .OUTPUTS
+        Along with some feedback information this function produce a txt file with post install instructions.
     #>
     [CmdletBinding()]
+    [OutputType('System.String')]
     param (
         [Parameter(Mandatory)]
         [string]$InstanceID,
@@ -51,13 +54,11 @@ function New-EPRInstallation {
         [Parameter()]
         [Switch]$DoNotSendInstallationDetailsToEasit
     )
-    
     begin {
         $InformationPreference = 'Continue'
         $script:ProgressPreference = 'SilentlyContinue'
         $startingDirectory = Get-Location
     }
-    
     process {
         if (!($DoNotSendInstallationDetailsToEasit) -and !($UseSettingsFromFile)) {
             Write-Host "" -ForegroundColor DarkGreen
@@ -91,7 +92,7 @@ function New-EPRInstallation {
         }
         if ($PSCmdlet.MyInvocation.BoundParameters["Verbose"].IsPresent) {
             $loggingParameters.LogLevel = 'VERBOSE'
-        } 
+        }
         if ($PSCmdlet.MyInvocation.BoundParameters["Debug"].IsPresent) {
             $loggingParameters.LogLevel = 'DEBUG'
         }
@@ -348,7 +349,8 @@ function New-EPRInstallation {
         try {
             $file = Get-ChildItem -Path "$tomcatConfRoot" -Recurse -Include "$tomcatFileToReplaceSystemPortIn"
         } catch {
-
+            Write-EPRInstallLog -InputObject $_ -Level ERROR @loggingParameters
+            return
         }
         try {
             $fileContent = Get-Content -Path $file.FullName -Raw
@@ -386,7 +388,8 @@ function New-EPRInstallation {
         try {
             $file = Get-ChildItem -Path "$systemConfigRoot" -Recurse -Include "$configFileToReplaceSystemRootIn"
         } catch {
-
+            Write-EPRInstallLog -InputObject $_ -Level ERROR @loggingParameters
+            return
         }
         try {
             $fileContent = Get-Content -Path $file.FullName -Raw
@@ -544,7 +547,7 @@ function New-EPRInstallation {
     } catch {
         Write-EPRInstallLog -InputObject $_ -Level VERBOSE @loggingParameters
     }
-    if (!($null = $SendInstallationDetailsToEasit)) {
+    if (!($null -eq $SendInstallationDetailsToEasit)) {
         $installerSettings.Parameters.SendInstallationDetailsToEasit = "$SendInstallationDetailsToEasit"
     }
     if (($installerSettings.Parameters.SendInstallationDetailsToEasit -eq 'True') -and $body) {
@@ -601,7 +604,6 @@ function New-EPRInstallation {
     #endregion
     Write-EPRInstallLog -Message "Thank you for installing Easit Process Runner" @loggingParameters
     }
-    
     end {
         Set-Location -Path $startingDirectory
     }
