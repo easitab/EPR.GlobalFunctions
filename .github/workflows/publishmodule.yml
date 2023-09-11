@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: commitDocs
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@main
       - uses: actions-ecosystem/action-release-label@v1
         id: release-label
       - uses: actions-ecosystem/action-get-latest-tag@v1
