@@ -38,7 +38,7 @@ function Set-EPREnvironment {
     .OUTPUTS
         This function do not produce any output.
     #>
-    [CmdletBinding()]
+    [CmdletBinding(HelpUri = 'https://docs.easitgo.com/techspace/psmodules/eprglobalfunctions/seteprenvironment/')]
     [OutputType()]
     param (
         [Parameter()]
@@ -60,9 +60,9 @@ function Set-EPREnvironment {
             Force = $true
         }
         try {
-            New-Variable -Name 'epr_Directory' -Value (Split-Path -Path (Split-Path -Path $PSScriptRoot) -Parent) @newVarParams
+            New-Variable -Name 'epr_Directory' -Value (Split-Path -Path (Get-Location).Path -Parent) @newVarParams
             New-Variable -Name 'epr_logsDirectory' -Value (Join-Path -Path "$epr_Directory" -ChildPath 'logs') @newVarParams
-            New-Variable -Name 'epr_scriptsDirectory' -Value (Join-Path -Path "$epr_Directory" -ChildPath 'scripts') @newVarParams
+            New-Variable -Name 'epr_scriptsDirectory' -Value ((Get-Location).Path) @newVarParams
             New-Variable -Name 'epr_scriptSettingsDirectory' -Value (Join-Path -Path "$epr_scriptsDirectory" -ChildPath 'scriptSettings') @newVarParams
             New-Variable -Name 'epr_scriptHelpersDirectory' -Value (Join-Path -Path "$epr_scriptsDirectory" -ChildPath 'helpers') @newVarParams
             New-Variable -Name 'epr_modulesDirectory' -Value (Join-Path -Path "$epr_scriptHelpersDirectory" -ChildPath 'modules') @newVarParams
@@ -86,7 +86,7 @@ function Set-EPREnvironment {
         if ($IncludeOldVariableNames) {
             Write-Warning "You are using the old environment setup, please consider moving to the new environment setup!"
             try {
-                New-Variable -Name 'easitPRDirectory' -Value (Split-Path -Path (Split-Path -Path $PSScriptRoot) -Parent) @newVarParams
+                New-Variable -Name 'easitPRDirectory' -Value (Split-Path -Path (Get-Location).Path -Parent) @newVarParams
                 New-Variable -Name 'easitPRlogsDirectory' -Value (Join-Path -Path "$epr_Directory" -ChildPath 'logs') @newVarParams
                 New-Variable -Name 'easitPRscriptsDirectory' -Value (Join-Path -Path "$epr_Directory" -ChildPath 'scripts') @newVarParams
                 New-Variable -Name 'easitPRscriptSettingsDirectory' -Value (Join-Path -Path "$epr_scriptsDirectory" -ChildPath 'scriptSettings') @newVarParams
