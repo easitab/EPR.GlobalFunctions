@@ -12,7 +12,7 @@
                     "name":"samAccountName",
                     "rawValue":null
                 },{
-                    "content":"CN=testsson\\, test,OU=CAB,OU=TR,OU=SE,OU=NC,OU=Users,OU=CF,DC=camfil,DC=net",
+                    "content":"CN=testsson\\, test,OU=Users,DC=company,DC=com",
                     "name":"dn",
                     "rawValue":null
                 }
