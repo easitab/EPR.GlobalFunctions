@@ -5,7 +5,7 @@ function Convert-EasitGOExportString {
     .DESCRIPTION
         The **Convert-EasitGOExportString** function can be used to convert the exported payload from Easit GO to a PSCustomObject.
         The function starts by checking if the input is a json string or not, and if not is assumes that the input is a base64 string.
-        
+
         By using *ConvertFrom-Json* the string is converted to a PSCustomObject.
 
         If -Raw is used, the object is returned.
