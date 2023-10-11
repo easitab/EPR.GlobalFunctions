@@ -12,7 +12,7 @@ BeforeAll {
         Write-Output "Unable to locate code file ($($envSettings.CodeFilePath)) to test against!" -ForegroundColor Red
     }
     try {
-        $StringInput = Get-Content -Path (Join-Path -Path $envSettings.TestDataDirectory -ChildPath 'exportExample_8859-1.json') -Raw -Encoding unicode
+        $StringInput = Get-Content -Path (Join-Path -Path $envSettings.TestDataDirectory -ChildPath 'exportExample.json') -Raw -Encoding unicode
     } catch {
         throw $_
     }
