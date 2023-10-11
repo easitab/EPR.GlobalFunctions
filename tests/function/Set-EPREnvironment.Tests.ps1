@@ -59,7 +59,9 @@ BeforeAll {
     function Import-Module {
         [CmdletBinding()]
         param (
-            $MyInput
+            $MyInput,
+            $Global,
+            $Force
         )
     }
 }
