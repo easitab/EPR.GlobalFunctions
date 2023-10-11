@@ -23,7 +23,7 @@ function Set-EPRDirectoryPermission {
     .PARAMETER AccessControlType
         Specifies whether to allow or deny the operation.
     #>
-    [CmdletBinding()]
+    [CmdletBinding(HelpUri='https://docs.easitgo.com/techspace/psmodules/eprglobalfunctions/functions/seteprdirectorypermission/')]
     [OutputType()]
     param (
         [Parameter(Mandatory)]

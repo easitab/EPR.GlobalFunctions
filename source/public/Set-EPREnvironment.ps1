@@ -40,7 +40,7 @@ function Set-EPREnvironment {
     .OUTPUTS
         This function do not produce any output.
     #>
-    [CmdletBinding(HelpUri = 'https://docs.easitgo.com/techspace/psmodules/eprglobalfunctions/seteprenvironment/')]
+    [CmdletBinding(HelpUri = 'https://docs.easitgo.com/techspace/psmodules/eprglobalfunctions/functions/seteprenvironment/')]
     [OutputType()]
     param (
         [Parameter()]

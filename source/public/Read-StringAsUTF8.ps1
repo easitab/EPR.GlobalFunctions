@@ -20,7 +20,7 @@ function Read-StringAsUTF8 {
     .OUTPUTS
         [System.String](https://learn.microsoft.com/en-us/dotnet/api/system.string)
     #>
-    [CmdletBinding()]
+    [CmdletBinding(HelpUri='https://docs.easitgo.com/techspace/psmodules/eprglobalfunctions/functions/readstringasutf8/')]
     [OutputType('System.String')]
     param (
         [Parameter(Mandatory,Position=0)]

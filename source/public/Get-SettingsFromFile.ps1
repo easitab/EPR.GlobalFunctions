@@ -25,7 +25,7 @@ function Get-SettingsFromFile {
     .OUTPUTS
         [PSCustomObject](https://learn.microsoft.com/en-us/dotnet/api/system.management.automation.pscustomobject)
     #>
-    [CmdletBinding()]
+    [CmdletBinding(HelpUri='https://docs.easitgo.com/techspace/psmodules/eprglobalfunctions/functions/getsettingsfromfile/')]
     [OutputType([PSCustomObject])]
     param (
         [Parameter()]

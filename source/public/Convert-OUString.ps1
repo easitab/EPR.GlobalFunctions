@@ -46,7 +46,7 @@ function Convert-OUString {
 
         [hashtable]
     #>
-    [CmdletBinding()]
+    [CmdletBinding(HelpUri='https://docs.easitgo.com/techspace/psmodules/eprglobalfunctions/functions/convertoustring/')]
     [OutputType([PSCustomObject],[hashtable])]
     param (
         [Parameter(Mandatory)]

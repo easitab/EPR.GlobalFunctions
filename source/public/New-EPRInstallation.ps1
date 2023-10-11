@@ -34,7 +34,7 @@ function New-EPRInstallation {
     .OUTPUTS
         Along with some feedback information this function produce a txt file with post install instructions.
     #>
-    [CmdletBinding()]
+    [CmdletBinding(HelpUri='https://docs.easitgo.com/techspace/psmodules/eprglobalfunctions/functions/neweprinstallation/')]
     [OutputType('System.String')]
     param (
         [Parameter(Mandatory)]

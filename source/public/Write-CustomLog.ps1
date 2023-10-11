@@ -71,7 +71,7 @@ function Write-CustomLog {
     .OUTPUTS
         None. This cmdlet returns no output.
     #>
-	[CmdletBinding()]
+	[CmdletBinding(HelpUri='https://docs.easitgo.com/techspace/psmodules/eprglobalfunctions/functions/writecustomlog/')]
 	Param (
 		[Parameter(ValueFromPipeline,ParameterSetName='string')]
         [string]$Message,
