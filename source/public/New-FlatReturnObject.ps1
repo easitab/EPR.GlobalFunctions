@@ -8,12 +8,13 @@ function New-FlatReturnObject {
         "Flat" PSCustomObject: $myObject.wantedProperty
 
         "Hidden" properties added to the returned PSCustomObject are:
+
         * ObjectId
         * DatabaseId
         * PropertyObjects
         * propertyName_rawValue (one for each property)
 
-        If a property occurres more than one time, the property value will be an array of all values with that name.
+        If a property occurs more than one time, the property value will be an array of all values with that name.
     .EXAMPLE
         try {
             New-FlatReturnObject -Object $exportObject.itemToImport[0]

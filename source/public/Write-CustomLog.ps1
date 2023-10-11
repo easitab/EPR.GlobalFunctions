@@ -4,22 +4,16 @@ function Write-CustomLog {
         Writes input to file and a output stream.
     .DESCRIPTION
         This function provide the option to log output and / or progress in scripts.
-        While there are functions like *Start-Transcript* and *Out-File*, *Write-CustomLog* also
-        handles log rotation and naming of log history.
+        While there are functions like *Start-Transcript* and *Out-File*, *Write-CustomLog* also handles log rotation and naming of log history.
 
-        *Write-CustomLog* will always append *_date* to the logname and remove logs older than the value
-        of *RotationInterval*.
+        *Write-CustomLog* will always append *_date* to the logname and remove logs older than the value of *RotationInterval*.
 
-        *Write-CustomLog* uses *Out-File* for writing output to a file and then redirects either *Message*
-        or *InputObject* to the stream corresponding with the value of *Level*.
+        *Write-CustomLog* uses *Out-File* for writing output to a file and then redirects either *Message* or *InputObject* to the stream corresponding with the value of *Level*.
 
-        If no input is provided for *-LogName*, *-LogDirectory* nor *-RotationInterval* the function will look for a variable named LoggerSettings in the global scope with a property or key with the same name and use that value.
-
-        If no input is provided for *-LogName*, the name of the caller script is used as input.
-
-        If no input is provided for *-LogDirectory*, logs will be written to $pwd.
-
-        If no input is provided for *-RotationInterval*, 30 will used as value.
+        * If no input is provided for *-LogName*, *-LogDirectory* nor *-RotationInterval* the function will look for a variable named LoggerSettings in the global scope with a property or key with the same name and use that value.
+        * If no input is provided for *-LogName*, the name of the caller script is used as input.
+        * If no input is provided for *-LogDirectory*, logs will be written to $pwd.
+        * If no input is provided for *-RotationInterval*, 30 will used as value.
     .PARAMETER Message
         String that will be written to file and stream.
     .PARAMETER InputObject
@@ -65,13 +59,13 @@ function Write-CustomLog {
 
         Basic *real world* example of how to use *Write-CustomLog* in a script.
     .INPUTS
-        [string]
+        [System.String](https://learn.microsoft.com/en-us/dotnet/api/system.string)
 
-        [object]
+        [System.Object](https://learn.microsoft.com/en-us/dotnet/api/system.object)
     .OUTPUTS
-        None. This cmdlet returns no output.
+        None. This cmdlet returns no output
     #>
-	[CmdletBinding()]
+	[CmdletBinding(HelpUri='https://docs.easitgo.com/techspace/psmodules/eprglobalfunctions/functions/writecustomlog/')]
 	Param (
 		[Parameter(ValueFromPipeline,ParameterSetName='string')]
         [string]$Message,

@@ -1,3 +1,257 @@
+function Convert-OUString {
+    <#
+    .SYNOPSIS
+        Converts a DN string to a PSCustomObject or hashtable.
+    .DESCRIPTION
+        The *Convert-OUString* function takes a string and splits it according to the specification of an LDAP DN as contained in RFC 4514.
+        Each RDN (name-value pair) is added to the returning object with nameNumber as name and value as the value.
+
+        The DN 'uid=johnDoe,ou=People,dc=example,dc=com' will result in a PSCustomObject or hashtable with following properties and values.
+
+        - dc1 : com
+        - dc2 : example
+        - ou1 : People
+        - uid1 : johnDoe
+        - OUPath : ou=People,dc=example,dc=com
+
+        The *Convert-OUString* function also adds a property named 'OUPath' with the full DN up to the last (when reading from right to left) RDN.
+    .PARAMETER OUString
+        String to convert
+    .PARAMETER AsPSCustomObject
+        Tells the function to return a PSCustomObject instead of a hashtable
+    .EXAMPLE
+        PS> Convert-OUString -OUString "uid=john.doe,ou=People,dc=example,dc=com"
+        Name                           Value
+        ----                           -----
+        OUPath                         ou=People,dc=example,dc=com
+        dc1                            com
+        dc2                            example
+        ou1                            People
+        uid1                           john.doe
+
+        In this example we are converting a DN to a hashtable.
+    .EXAMPLE
+        PS> Convert-OUString -OUString "uid=john.doe,ou=People,dc=example,dc=com" -AsPSCustomObject
+        OUPath : ou=People,dc=example,dc=com
+        dc1    : com
+        dc2    : example
+        ou1    : People
+        uid1   : john.doe
+        
+        In this example we are converting a DN to a PSCustomObject.
+    .INPUTS
+        None. You cannot pipe objects to Convert-OUString.
+    .OUTPUTS
+        [PSCustomObject]
+
+        [hashtable]
+    #>
+    [CmdletBinding()]
+    [OutputType([PSCustomObject],[hashtable])]
+    param (
+        [Parameter(Mandatory)]
+        [string]$OUString,
+        [Parameter()]
+        [switch]$AsPSCustomObject
+    )
+    begin {
+        Write-Verbose "$($MyInvocation.MyCommand) begin"
+    }
+    process {
+        $returnHashtable = [ordered]@{}
+        $fullOU = $OUString -replace '^.+?(?<!\\),',''
+        $returnHashtable.Add("OUPath","$fullOU")
+        if ($OUString -match '\\,') {
+            $OUString = $OUString -replace '\\,',''
+            $escapeCharacterInCN = $true
+        }
+        do {
+            $Matches = $null
+            $null = $OUString -match ',?([A-Za-z]{2,3})=([a-zA-Z0-9-_\.\s]*)$'
+            try {
+                $levelName = $Matches[1]
+                $levelValue = $Matches[2]
+            } catch{
+                throw $_
+            }
+            if ($levelName -eq 'CN' -or $levelName -eq 'uid') {
+                if ($escapeCharacterInCN) {
+                    $newLevelValue = $levelValue -replace ' ','\, '
+                } else {
+                    $newLevelValue = $levelValue
+                }
+            }
+            $level = 1
+            $levelKeyName = "${levelName}${level}"
+            if ($returnHashTable."$levelKeyName") {
+                do {
+                    $level++
+                    $levelKeyName = "${levelName}${level}"
+                } while ($returnHashTable."$levelKeyName")
+            }
+            if ($levelName -eq 'CN') {
+                $returnHashtable.Add("$levelKeyName","$newLevelValue")
+            } else {
+                $returnHashtable.Add("$levelKeyName","$levelValue")
+            }
+            $OUString = $OUString -replace "${levelName}=${levelValue}",""
+            $OUString = $OUString.TrimEnd(",")
+        } while (!([string]::IsNullOrEmpty($OUString)))
+        if ($AsPSCustomObject) {
+            [pscustomobject]$returnHashtable
+        } else {
+            $returnHashtable
+        }
+    }
+    end {
+        Write-Verbose "$($MyInvocation.MyCommand) end"
+    }
+}
+function Get-SettingsFromFile {
+    <#
+    .SYNOPSIS
+        Get settings for script
+    .DESCRIPTION
+        The *Get-SettingsFromFile* function looks for a file named *globalSettings.json*, a file named *scriptName.json* and for a object in *globalSettings.json* with same name as the scriptfile invoking the function and returns a PSCustomObject with the combined settings.
+
+        If the same setting is found in multiple places the following priority is used:
+
+        1. Scriptnamed object in *globalSettings.json*.
+        2. *scriptName.json*.
+        3. Global object in *globalSettings.json*.
+
+        Before returning the PSCustomObject all settings values are matched against the string '__globalValue__'. If there is a match the value for the global settings with the same name will be used.
+    .PARAMETER Filename
+        Name of file containing script specific settings.
+    .PARAMETER Path
+        Path to directory where settings files are located.
+    .EXAMPLE
+        PS> Get-SettingsFromFile
+
+        In this example we are using the function in a scriptfile named testService.ps1. All settings from 'testService.json' (if exist) and the testService object in 'globalSettings' will be added to the returning PSCustomObject.
+    .INPUTS
+        None. You cannot pipe objects to Get-SettingsFromFile.
+    .OUTPUTS
+        [PSCustomObject]
+    #>
+    [CmdletBinding()]
+    [OutputType([PSCustomObject])]
+    param (
+        [Parameter()]
+        [string]$Filename,
+        [Parameter()]
+        [string]$Path
+    )
+    
+    begin {
+        Write-Verbose "$($MyInvocation.MyCommand) begin"
+    }
+    
+    process {
+        if ([string]::IsNullOrEmpty($Filename)) {
+            $callStack = Get-PSCallStack
+            $Filename = $callStack[1].Command.TrimEnd('\.ps1')
+        }
+        if ([string]::IsNullOrEmpty($Path)) {
+            $Path = $easitPRscriptSettingsDirectory
+        }
+        if (!(Test-Path -Path $Path)) {
+            throw "Unable to find $Path"
+        }
+        try {
+            $globalSettingsFile = Get-ChildItem -Path $Path -Recurse -Include "globalSettings.json"
+        } catch {
+            throw $_
+        }
+        if ($globalSettingsFile.Count -eq 1) {
+            try {
+                $globalSettings = Get-Content -Path "$($globalSettingsFile.FullName)" -Raw | ConvertFrom-Json
+                $globalSettingsObject = $globalSettings.global
+            } catch {
+                Write-CustomLog -InputObject $_ -Level WARN
+            }
+            if ($globalSettings."$FileName") {
+                try {
+                    $globalScriptSettingsObject = $globalSettings."$FileName"
+                } catch {
+                    Write-CustomLog -InputObject $_ -Level WARN
+                }
+            }
+        }
+        if ($globalSettingsFile.Count -gt 1) {
+            Write-CustomLog -Message "Multiple global settings file found, skipping.." -Level WARN
+        }
+        if (!($globalSettingsFile)) {
+            Write-CustomLog -Message "No global settings file found, skipping.." -Level WARN
+        }
+        try {
+            $settingsFile = Get-ChildItem -Path $Path -Recurse -Include "${Filename}.json"
+        } catch {
+            throw $_
+        }
+        if (!($settingsFile)) {
+            Write-CustomLog -Message "No script specific settings file found" -Level WARN
+        }
+        if ($settingsFile.Count -eq 1) {
+            try {
+                $scriptSettingsObject = Get-Content -Path "$($settingsFile.FullName)" -Raw | ConvertFrom-Json
+            } catch {
+                throw $_
+            }
+        } 
+        if ($settingsFile.Count -gt 1) {
+            throw "Multiple setting files found"
+        }
+        if ($globalSettingsObject -or $globalScriptSettingsObject -or $scriptSettingsObject) {
+            Write-CustomLog -Message "Settings have been found"
+        } else {
+            throw "Unable to find any settings for script"
+        }
+        $returnObject = New-Object PSCustomObject
+        if ($globalScriptSettingsObject) {
+            foreach ($setting in $globalScriptSettingsObject.PSObject.Properties) {
+                $settingName = $setting.Name
+                $settingValue = $setting.Value
+                if ($returnObject."$settingName") {
+                    $returnObject."$settingName" = $settingValue
+                } else {
+                    try {
+                        $returnObject | Add-Member -MemberType NoteProperty -Name "$settingName" -Value $settingValue
+                    } catch {
+                        Write-CustomLog -Message "Failed to add property $settingName" -Level WARN
+                    }
+                }
+            }
+        }
+        if ($scriptSettingsObject) {
+            foreach ($setting in $scriptSettingsObject.PSObject.Properties) {
+                $settingName = $setting.Name
+                $settingValue = $setting.Value
+                if ($returnObject."$settingName") {
+                    $returnObject."$settingName" = $settingValue
+                } else {
+                    try {
+                        $returnObject | Add-Member -MemberType NoteProperty -Name "$settingName" -Value $settingValue
+                    } catch {
+                        Write-CustomLog -Message "Failed to add property $settingName" -Level WARN
+                    }
+                }
+            }
+        }
+        foreach ($setting in $returnObject.PSObject.Properties) {
+            $settingName = $setting.Name
+            $settingValue = $setting.Value
+            if ("$settingValue" -eq '__globalValue__') {
+                $returnObject."$settingName" = $globalSettingsObject."$settingName"
+            }
+        }
+        $returnObject
+    }
+    
+    end {
+        Write-Verbose "$($MyInvocation.MyCommand) end"
+    }
+}
 function New-EPRInstallation {
     <#
     .SYNOPSIS
@@ -7,12 +261,6 @@ function New-EPRInstallation {
         This function will first look for settings in *.\lib\installerSettings.json* relative to path provided as *FromDirectory*.
         The settings in this file will be replaced in memory with any input provided with *InstallLocation*, *SystemName*, *Port* and *TomcatXmx*.
         Settings provided via a parameter will be used over settings in *installerSettings.json*
-    .EXAMPLE
-        PS> New-EPRInstallation -InstanceID ABC123 -FromDirectory '.\EPRInstaller-1.0.0'
-    .EXAMPLE
-        PS> New-EPRInstallation -InstanceID ABC123 -FromDirectory '.\EPRInstaller-1.0.0' -InstallLocation 'E:\'
-    .EXAMPLE
-        PS> New-EPRInstallation -InstanceID ABC123 -FromDirectory '.\EPRInstaller-1.0.0' -InstallLocation 'F:\' -Port 9005
     .PARAMETER InstanceID
         ID from Easit AB representing the customers instance.
     .PARAMETER FromDirectory
@@ -31,13 +279,14 @@ function New-EPRInstallation {
         With *IgnoreDirectoryStructure* provided: D:\EPR-[SystemName]
     .PARAMETER DoNotSendInstallationDetailsToEasit
         Specifies if the installer should NOT try to send server and installations details to Easit upon completed installation.
-    .INPUTS
-        None. You cannot pipe objects to Get-SettingsFromFile
-    .OUTPUTS
-        Along with some feedback information this function produce a txt file with post install instructions
+    .EXAMPLE
+        PS> New-EPRInstallation -InstanceID ABC123 -FromDirectory '.\EPRInstaller-1.0.0'
+    .EXAMPLE
+        PS> New-EPRInstallation -InstanceID ABC123 -FromDirectory '.\EPRInstaller-1.0.0' -InstallLocation 'E:\'
+    .EXAMPLE
+        PS> New-EPRInstallation -InstanceID ABC123 -FromDirectory '.\EPRInstaller-1.0.0' -InstallLocation 'F:\' -Port 9005
     #>
-    [CmdletBinding(HelpUri='https://docs.easitgo.com/techspace/psmodules/eprglobalfunctions/functions/neweprinstallation/')]
-    [OutputType('System.String')]
+    [CmdletBinding()]
     param (
         [Parameter(Mandatory)]
         [string]$InstanceID,
@@ -56,11 +305,13 @@ function New-EPRInstallation {
         [Parameter()]
         [Switch]$DoNotSendInstallationDetailsToEasit
     )
+    
     begin {
         $InformationPreference = 'Continue'
         $script:ProgressPreference = 'SilentlyContinue'
         $startingDirectory = Get-Location
     }
+    
     process {
         if (!($DoNotSendInstallationDetailsToEasit) -and !($UseSettingsFromFile)) {
             Write-Host "" -ForegroundColor DarkGreen
@@ -94,7 +345,7 @@ function New-EPRInstallation {
         }
         if ($PSCmdlet.MyInvocation.BoundParameters["Verbose"].IsPresent) {
             $loggingParameters.LogLevel = 'VERBOSE'
-        }
+        } 
         if ($PSCmdlet.MyInvocation.BoundParameters["Debug"].IsPresent) {
             $loggingParameters.LogLevel = 'DEBUG'
         }
@@ -351,8 +602,7 @@ function New-EPRInstallation {
         try {
             $file = Get-ChildItem -Path "$tomcatConfRoot" -Recurse -Include "$tomcatFileToReplaceSystemPortIn"
         } catch {
-            Write-EPRInstallLog -InputObject $_ -Level ERROR @loggingParameters
-            return
+
         }
         try {
             $fileContent = Get-Content -Path $file.FullName -Raw
@@ -390,8 +640,7 @@ function New-EPRInstallation {
         try {
             $file = Get-ChildItem -Path "$systemConfigRoot" -Recurse -Include "$configFileToReplaceSystemRootIn"
         } catch {
-            Write-EPRInstallLog -InputObject $_ -Level ERROR @loggingParameters
-            return
+
         }
         try {
             $fileContent = Get-Content -Path $file.FullName -Raw
@@ -549,7 +798,7 @@ function New-EPRInstallation {
     } catch {
         Write-EPRInstallLog -InputObject $_ -Level VERBOSE @loggingParameters
     }
-    if (!($null -eq $SendInstallationDetailsToEasit)) {
+    if (!($null = $SendInstallationDetailsToEasit)) {
         $installerSettings.Parameters.SendInstallationDetailsToEasit = "$SendInstallationDetailsToEasit"
     }
     if (($installerSettings.Parameters.SendInstallationDetailsToEasit -eq 'True') -and $body) {
@@ -606,7 +855,314 @@ function New-EPRInstallation {
     #endregion
     Write-EPRInstallLog -Message "Thank you for installing Easit Process Runner" @loggingParameters
     }
+    
     end {
         Set-Location -Path $startingDirectory
+    }
+}
+
+function Write-CustomLog {
+    <#
+    .SYNOPSIS
+        Writes input to file and a output stream.
+    .DESCRIPTION
+        This function provide the option to log output and / or progress in scripts.
+        While there are functions like *Start-Transcript* and *Out-File*, *Write-CustomLog* also
+        handles log rotation and naming of log history.
+
+        *Write-CustomLog* will always append *_date* to the logname and remove logs older than the value
+        of *RotationInterval*.
+
+        *Write-CustomLog* uses *Out-File* for writing output to a file and then redirects either *Message*
+        or *InputObject* to the stream corresponding with the value of *Level*.
+
+        If no input is provided for *-LogName*, *-LogDirectory* nor *-RotationInterval* the function will look for a variable named LoggerSettings in the global scope with a property or key with the same name and use that value. 
+        
+        If no input is provided for *-LogName*, the name of the caller script is used as input.
+        
+        If no input is provided for *-LogDirectory*, logs will be written to $pwd.
+        
+        If no input is provided for *-RotationInterval*, 30 will used as value.
+    .PARAMETER Message
+        String that will be written to file and stream.
+    .PARAMETER InputObject
+        The object that will be written to file and stream.
+    .PARAMETER Level
+        What stream should the input be redirected to.
+    .PARAMETER OutputLevel
+        What level of input should be written to file and stream.
+    .PARAMETER LogName
+        Name of logfile.
+    .PARAMETER LogDirectory
+        In what directory should logs be saved.
+    .PARAMETER RotationInterval
+        For how many days should logs be kept on disk.
+    .PARAMETER Rotate
+        Tells the function to rotate logs. If this is always included with *Write-CustomLog* it will always try to rotate logs each time *Write-CustomLog* is invoked.
+    .EXAMPLE
+        Write-CustomLog -Message "Staring script"
+
+        In this example we write the string *Starting script* as a log entry with the level of INFO.
+        It will also use Write-Information to output it to the correct stream.
+    .EXAMPLE
+        Write-CustomLog -InputObject $_ -Level ERROR
+
+        In this example we write the current objekt to as a log entry with the level of ERROR.
+        It will also use Write-Error to output it to the correct stream.
+    .EXAMPLE
+        Write-CustomLog -Message "Rotating logs" -Level VERBOSE -Rotate
+
+        In this example we write the string *Starting script* as a log entry with the level of INFO.
+        It will also use Write-Information to output it to the correct stream.
+        Since we specify *-Rotate* the function will try to remove files older than set by *RotationInterval*.
+    .EXAMPLE
+        Write-CustomLog -Message "Starting script and rotating logs" -Rotate
+        Write-CustomLog -Message "Trying something" -Level VERBOSE
+        try {
+            try-something
+        } catch {
+            Write-CustomLog -InputObject $_ -Level ERROR
+            return
+        }
+        Write-CustomLog -Message "Script end"
+
+        Basic *real world* example of how to use *Write-CustomLog* in a script.
+    .INPUTS
+        [string]
+
+        [object]
+    .OUTPUTS
+        None. This cmdlet returns no output.
+    #>
+	[CmdletBinding()]
+	Param (
+		[Parameter(ValueFromPipeline,ParameterSetName='string')]
+        [string]$Message,
+		[Parameter(ValueFromPipeline,ParameterSetName='object')]
+        [object]$InputObject,
+		[Parameter()]
+        [ValidateSet('ERROR','WARN','INFO','VERBOSE','DEBUG')]
+		[string]$Level = 'INFO',
+        [Parameter()]
+        [ValidateSet('ERROR','WARN','INFO','VERBOSE','DEBUG')]
+		[string]$OutputLevel,
+		[Parameter()]
+		[string]$LogName,
+		[Parameter()]
+		[string]$LogDirectory,
+		[Parameter()]
+		[int]$RotationInterval,
+        [Parameter()]
+        [switch]$Rotate
+	)
+    $globalLoggerSettings = $global:LoggerSettings
+	if ([string]::IsNullOrWhiteSpace($LogName)) {
+        if (!([string]::IsNullOrWhiteSpace($globalLoggerSettings.LogName))) {
+            $LogName = $globalLoggerSettings.LogName
+        } else {
+            $callStack = Get-PSCallStack
+            $LogName = $callStack[1].Command.TrimEnd('\.ps1')
+        }
+	}
+    if ([string]::IsNullOrWhiteSpace($OutputLevel)) {
+        if (!([string]::IsNullOrWhiteSpace($globalLoggerSettings.OutputLevel))) {
+            $OutputLevel = $globalLoggerSettings.OutputLevel
+        } else {
+            $OutputLevel = 'INFO'
+        }
+	}
+	if ([string]::IsNullOrWhiteSpace($Level)) {
+        $Level = 'INFO'
+	}
+	if ([string]::IsNullOrWhiteSpace($LogDirectory)) {
+        if (!([string]::IsNullOrWhiteSpace($globalLoggerSettings.LogDirectory))) {
+            $LogDirectory = $globalLoggerSettings.LogDirectory
+        } else {
+            $LogDirectory = $easitPRlogsDirectory
+        }
+    }
+	if ([string]::IsNullOrWhiteSpace("$RotationInterval")) {
+        if (!([string]::IsNullOrWhiteSpace("$($globalLoggerSettings.RotationInterval)"))) {
+            $LogDirectory = $globalLoggerSettings.RotationInterval
+        } else {
+            $RotationInterval = 30
+        }
+	}
+	$LogLevelTable = @{
+        ERROR = 1
+        WARN = 2
+        INFO = 3
+        VERBOSE = 4
+        DEBUG = 5
+    }
+	$today = Get-Date -Format "yyyyMMdd"
+	$LogName = "${LogName}_${today}.log"
+	$logOutputPath = Join-Path -Path "$LogDirectory" -ChildPath "$LogName"
+    if ($Rotate) {
+        $logArchiveFiles = Get-ChildItem -Path "$LogDirectory" -Recurse  -Include "*${logname}*.log"
+        foreach ($logArchiveFile in $logArchiveFiles) {
+            if ($logArchiveFile.CreationTime -lt ((Get-Date).AddDays(-$RotationInterval))) {
+                "$($logArchiveFile.Name) is older than $RotationInterval days, removing.." | Out-File -FilePath "$logOutputPath" -Encoding UTF8 -Append -NoClobber
+				try {
+					Remove-Item "$($logArchiveFile.FullName)" -Force
+				} catch {
+					Write-Error $_
+					exit
+				}
+                "$FormattedDate - INFO - Removed $($logArchiveFile.Name)" | Out-File -FilePath "$logOutputPath" -Encoding UTF8 -Append -NoClobber
+            }
+        }
+    }
+    if ($LogLevelTable."$Level" -le $LogLevelTable."$OutputLevel") {
+        $FormattedDate = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+        $PSStyle.OutputRendering = 'PlainText'
+        if (!(Test-Path $logOutputPath)) {
+            $NewLogFile = New-Item "$logOutputPath" -Force -ItemType File
+            "$FormattedDate - INFO - Created $NewLogFile" | Out-File -FilePath "$logOutputPath" -Encoding UTF8 -Append -NoClobber
+        }
+        if ($Message) {
+            "$FormattedDate - $Level - $Message" | Out-File -FilePath "$logOutputPath" -Encoding UTF8 -Append -NoClobber
+        }
+        if ($InputObject) {
+            "$FormattedDate - $Level - InputObject" | Out-File -FilePath "$logOutputPath" -Encoding UTF8 -Append -NoClobber
+            $InputObject | Out-File -FilePath "$logOutputPath" -Encoding UTF8 -Append -NoClobber
+        }
+    }
+}
+function New-PostBody {
+    <#
+    .SYNOPSIS
+        Function to create a "Easit GO" formatted body for web requests.
+    .DESCRIPTION
+        This functions takes a "settings object" as input and uses the settings there to create a json body that can be used with Invoke-RestMethod.
+    .EXAMPLE
+        PS> $body = New-PostBody -InstallerSettings $installerSettings
+    .PARAMETER InstallerSettings
+        Settings object holding a FeedbackSettings.postBody property with an array of properties and a importHandlerIdentifier.
+
+        ```json
+            "FeedbackSettings":{
+                "postBody":{
+                    "importHandlerIdentifier":"",
+                    "properties":["Property1","Property2"]
+                }
+            }
+        ```
+    .INPUTS
+        [PSCustomObject]
+    .OUTPUTS
+        JSON formatted string.
+    #>
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)]
+        [PSCustomObject]$InstallerSettings
+    )
+    
+    begin {
+        
+    }
+    
+    process {
+        $items = @()
+        $propertiesArray = @()
+        foreach ($prop in $InstallerSettings.FeedbackSettings.postBody.properties) {
+            $propObject = [PSCustomObject]@{
+                name = "$prop"
+                content = $InstallerSettings."$prop"
+            }
+            $propertiesArray += $propObject
+        }
+        $guid = (New-Guid) -replace '-',''
+        $itemObject = [PSCustomObject]@{
+            property = $propertiesArray
+            id = $guid
+            uid = $guid
+            
+        }
+        $items += $itemObject
+        $bodyObject = [PSCustomObject]@{
+            importHandlerIdentifier = $InstallerSettings.FeedbackSettings.postBody.importHandlerIdentifier
+            itemToImport = $items
+        }
+        try {
+            $bodyObject | ConvertTo-Json -Depth 4
+        } catch {
+            throw $_
+        }
+    }
+    
+    end {
+        
+    }
+}
+
+function Write-EPRInstallLog {
+    <#
+    .SYNOPSIS
+        Easit custom Powershell logger.
+    .DESCRIPTION
+        Easit custom Powershell logger works similar to log4j that is used with Java applications.
+
+        Two different logging techniques are used depending on the input:
+        "$FormattedDate - $Level - $Message" | Out-File
+        $InputObject | Out-File
+    .PARAMETER Message
+        Used for string input and will be written to log file as: DATE TIME - LEVEL - MESSAGE
+    .PARAMETER InputObject
+        Used for object input and will be written to log file as: 'DATE TIME - LEVEL - $InputObject.Exception' OR 'DATE TIME - LEVEL - $InputObject.ToString()' followed by 'DATE TIME - LEVEL - $InputObject'
+    .PARAMETER Level
+        What level the message should be written as. Default level is INFO.
+        Each level uses the corresponding Write-XX cmdlet to output data to the correct stream.
+        Ex. INFO = Write-Information, VERBOSE = Write-Verbose, WARN = Write-Warning.
+    .PARAMETER LogName
+        Name of log written to.
+    .PARAMETER LogDirectory
+        Directory to write log file in.
+    .PARAMETER LogLevel
+        What level the logger should output entries on.
+    .OUTPUTS
+        None. This cmdlet returns no output.
+    #>
+    [CmdletBinding()]
+    Param (
+        [Parameter(ValueFromPipeline,ParameterSetName='string',Position=0)]
+        [string]$Message,
+        [Parameter(ValueFromPipeline,ParameterSetName='object')]
+        [object]$InputObject,
+        [Parameter()]
+        [string]$Level = 'INFO',
+        [Parameter()]
+        [string]$LogName = 'EPRInstall',
+        [Parameter()]
+        [string]$LogDirectory,
+        [Parameter()]
+        [string]$LogLevel = 'INFO'
+    )
+    
+    $FormattedDate = Get-Date -Format "yyyy-MM-dd HH:mm:ss.fff"
+    $today = Get-Date -Format "yyyyMMdd"
+    $LogName = "${LogName}_${today}.log"
+    $LogPath = Join-Path -Path "$LogDirectory" -ChildPath "$LogName"
+    if ($InputObject -and $Level -eq 'ERROR') {
+        $Message = $InputObject.Exception
+    }
+    if ($InputObject -and $Level -ne 'ERROR') {
+        $Message = $InputObject.ToString()
+    }
+    "$FormattedDate - $Level - $Message" | Out-File -FilePath "$LogPath" -Encoding UTF8 -Append -NoClobber
+    if ($InputObject) {
+        $InputObject | Out-File -FilePath "$LogPath" -Encoding UTF8 -Append -NoClobber
+    }
+    $Message = "$FormattedDate - $Message"
+    # Write message to error, warning, or verbose pipeline
+    if ($Level -eq 'ERROR') {
+        Write-Error "$Message" -ErrorAction Continue
+    } elseif ($Level -eq 'WARN') {
+        Write-Warning "$Message" -WarningAction Continue
+    } elseif ($Level -eq 'INFO') {
+        Write-Information "$Message" -InformationAction Continue
+    } else {
+        ## Nothin to do
     }
 }

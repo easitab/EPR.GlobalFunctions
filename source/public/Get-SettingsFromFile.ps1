@@ -6,7 +6,6 @@ function Get-SettingsFromFile {
         The *Get-SettingsFromFile* function looks for a file named *globalSettings.json*, a file named *scriptName.json* and for a object in *globalSettings.json* with same name as the scriptfile invoking the function and returns a PSCustomObject with the combined settings.
 
         If the same setting is found in multiple places the following priority is used:
-
         1. Scriptnamed object in *globalSettings.json*.
         2. *scriptName.json*.
         3. Global object in *globalSettings.json*.
@@ -21,11 +20,11 @@ function Get-SettingsFromFile {
     .PARAMETER Path
         Path to directory where settings files are located.
     .INPUTS
-        None. You cannot pipe objects to Get-SettingsFromFile.
+        None. You cannot pipe objects to Get-SettingsFromFile
     .OUTPUTS
         [PSCustomObject](https://learn.microsoft.com/en-us/dotnet/api/system.management.automation.pscustomobject)
     #>
-    [CmdletBinding()]
+    [CmdletBinding(HelpUri='https://docs.easitgo.com/techspace/psmodules/eprglobalfunctions/functions/getsettingsfromfile/')]
     [OutputType([PSCustomObject])]
     param (
         [Parameter()]

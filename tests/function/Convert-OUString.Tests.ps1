@@ -31,6 +31,18 @@ Describe "Convert-OUString" -Tag 'function','public' {
     It 'help section should have EXAMPLES' {
         ((Get-Help "$($envSettings.CommandName)" -Full).EXAMPLES).Length | Should -BeGreaterThan 0
     }
+    It 'should have a HelpUri' {
+        ((Get-Command "$($envSettings.CommandName)").HelpUri).Length | Should -BeGreaterThan 0
+    }
+    It 'all parameters should have a description' {
+        $commonParameters = [System.Management.Automation.PSCmdlet]::CommonParameters
+        $optionalCommonParameters = [System.Management.Automation.PSCmdlet]::OptionalCommonParameters
+        foreach ($param in (Get-Help -Name "$($envSettings.CommandName)" -Full).parameters.parameter) {
+            if ($commonParameters -notcontains $param.name -and $optionalCommonParameters -notcontains $param.name) {
+                ($param.description.Text).Length | Should -BeGreaterThan 0
+            }
+        }
+    }
     It 'should return a OrderedDictionary (ordered hashtable) by default.' {
         Convert-OUString -OUString 'uid=johnDoe,ou=People,dc=example,dc=com' | Should -BeOfType 'System.Collections.Specialized.OrderedDictionary'
     }

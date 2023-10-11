@@ -33,7 +33,7 @@ jobs:
         os: [ubuntu-latest, ubuntu-20.04, windows-latest, windows-2019]
     steps:
     - uses: actions/checkout@main
-    - name: Invoke Pester
+    - name: Invoke Pester - Function tests
       shell: pwsh
       run: Invoke-Pester -Tag 'function'
 
@@ -47,6 +47,6 @@ jobs:
         os: [ubuntu-latest, ubuntu-20.04, windows-latest, windows-2019]
     steps:
     - uses: actions/checkout@main
-    - name: Invoke Pester
+    - name: Invoke Pester - Module tests
       shell: pwsh
       run: Invoke-Pester -Tag 'module'

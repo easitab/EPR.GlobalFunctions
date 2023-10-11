@@ -56,7 +56,19 @@ Describe "Get-SettingsFromFile" -Tag 'function','public' {
     It 'help section should have EXAMPLES' {
         ((Get-Help "$($envSettings.CommandName)" -Full).EXAMPLES).Length | Should -BeGreaterThan 0
     }
-    It 'should return a PSCustomObjec' {
+    It 'should have a HelpUri' {
+        ((Get-Command "$($envSettings.CommandName)").HelpUri).Length | Should -BeGreaterThan 0
+    }
+    It 'all parameters should have a description' {
+        $commonParameters = [System.Management.Automation.PSCmdlet]::CommonParameters
+        $optionalCommonParameters = [System.Management.Automation.PSCmdlet]::OptionalCommonParameters
+        foreach ($param in (Get-Help -Name "$($envSettings.CommandName)" -Full).parameters.parameter) {
+            if ($commonParameters -notcontains $param.name -and $optionalCommonParameters -notcontains $param.name) {
+                ($param.description.Text).Length | Should -BeGreaterThan 0
+            }
+        }
+    }
+    It 'should return a PSCustomObject' {
         Get-SettingsFromFile -Filename 'Get-SettingsFromFile' -Path $envSettings.TestDataDirectory | Should -BeOfType PSCustomObject
     }
     It "property value for LogOutputLevel should be 'VERBOSE'" {
