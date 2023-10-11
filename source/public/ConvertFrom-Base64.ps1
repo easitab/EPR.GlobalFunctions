@@ -19,6 +19,7 @@ function ConvertFrom-Base64 {
         [System.String](https://learn.microsoft.com/en-us/dotnet/api/system.string)
     #>
     [CmdletBinding(HelpUri = 'https://docs.easitgo.com/techspace/psmodules/eprglobalfunctions/functions/convertfrombase64/')]
+    [OutputType([System.String])]
     [Alias('Convert-FromBase64ToUtf8')]
     param (
         [Parameter(Mandatory)]

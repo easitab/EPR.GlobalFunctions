@@ -42,12 +42,11 @@ function Convert-OUString {
     .INPUTS
         None. You cannot pipe objects to Convert-OUString.
     .OUTPUTS
-        [PSCustomObject]
-
-        [hashtable]
+        [PSCustomObject](https://learn.microsoft.com/en-us/dotnet/api/system.management.automation.pscustomobject)
+        [Hashtable](https://learn.microsoft.com/en-us/dotnet/api/system.collections.hashtable)
     #>
     [CmdletBinding(HelpUri='https://docs.easitgo.com/techspace/psmodules/eprglobalfunctions/functions/convertoustring/')]
-    [OutputType([PSCustomObject],[hashtable])]
+    [OutputType([PSCustomObject],[Hashtable])]
     param (
         [Parameter(Mandatory)]
         [string]$OUString,

@@ -3,7 +3,8 @@ function Set-EPRDirectoryPermission {
     .SYNOPSIS
         Adds a access fule for an account to a directory.
     .DESCRIPTION
-        **Set-EPRDirectoryPermission** adds a access rule to the specified directory. By default the access rule added has the following settings
+        **Set-EPRDirectoryPermission** adds a access rule to the specified directory. By default the access rule added has the following settings:
+        
         - FileSystemRights = Modify
         - InheritanceFlags = ContainerInherit,ObjectInherit
         - PropagationFlags = None
@@ -22,6 +23,10 @@ function Set-EPRDirectoryPermission {
         Specifies how Access Control Entries (ACEs) are propagated to child objects.
     .PARAMETER AccessControlType
         Specifies whether to allow or deny the operation.
+    .INPUTS
+        None - You cannot pipe objects to this function
+    .OUTPUTS
+        None - This function does not produce any output
     #>
     [CmdletBinding(HelpUri='https://docs.easitgo.com/techspace/psmodules/eprglobalfunctions/functions/seteprdirectorypermission/')]
     [OutputType()]

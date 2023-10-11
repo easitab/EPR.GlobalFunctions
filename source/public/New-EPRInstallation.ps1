@@ -31,8 +31,10 @@ function New-EPRInstallation {
         With *IgnoreDirectoryStructure* provided: D:\EPR-[SystemName]
     .PARAMETER DoNotSendInstallationDetailsToEasit
         Specifies if the installer should NOT try to send server and installations details to Easit upon completed installation.
+    .INPUTS
+        None. You cannot pipe objects to Get-SettingsFromFile
     .OUTPUTS
-        Along with some feedback information this function produce a txt file with post install instructions.
+        Along with some feedback information this function produce a txt file with post install instructions
     #>
     [CmdletBinding(HelpUri='https://docs.easitgo.com/techspace/psmodules/eprglobalfunctions/functions/neweprinstallation/')]
     [OutputType('System.String')]

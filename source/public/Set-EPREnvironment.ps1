@@ -38,7 +38,7 @@ function Set-EPREnvironment {
     .INPUTS
         None - You cannot pipe objects to this function
     .OUTPUTS
-        This function do not produce any output.
+        This function do not produce any output
     #>
     [CmdletBinding(HelpUri = 'https://docs.easitgo.com/techspace/psmodules/eprglobalfunctions/functions/seteprenvironment/')]
     [OutputType()]
