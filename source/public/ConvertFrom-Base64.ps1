@@ -5,11 +5,12 @@ function ConvertFrom-Base64 {
     .DESCRIPTION
         The **ConvertFrom-Base64** function converts a base64 string to a UTF8 string with the help of [System.Convert]::FromBase64String and [System.Text.Encoding]::UTF8.GetString.
     .EXAMPLE
-        $string = '{importhandler:"myScript.ps1",exportedItem:{property1="specialCharacters"}}'
+        $string = '{"importhandler":"myScript.ps1","itemToImport":{"property":[{"property1":"specialCharacters"}]}}'
         $enc = [System.Text.Encoding]::UTF8
+        $stringBytes = $enc.GetBytes($string)
         $base64String = [System.Convert]::ToBase64String($stringBytes)
         ConvertFrom-Base64 -InputString $base64String
-        {importhandler:"myScript.ps1",exportedItem:{property1="specialCharacters"}}
+        {"importhandler":"myScript.ps1","itemToImport":{"property":[{"property1":"specialCharacters"}]}}
     .PARAMETER InputString
         Base64 string to convert
     .INPUTS
@@ -17,7 +18,7 @@ function ConvertFrom-Base64 {
     .OUTPUTS
         [System.String](https://learn.microsoft.com/en-us/dotnet/api/system.string)
     #>
-    [CmdletBinding(HelpUri = 'https://docs.easitgo.com/techspace/psmodules/eprglobalfunctions/convertfrombase64/')]
+    [CmdletBinding(HelpUri = 'https://docs.easitgo.com/techspace/psmodules/eprglobalfunctions/functions/convertfrombase64/')]
     [Alias('Convert-FromBase64ToUtf8')]
     param (
         [Parameter(Mandatory)]
