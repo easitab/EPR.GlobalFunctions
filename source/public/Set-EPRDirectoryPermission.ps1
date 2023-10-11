@@ -4,7 +4,7 @@ function Set-EPRDirectoryPermission {
         Adds a access fule for an account to a directory.
     .DESCRIPTION
         **Set-EPRDirectoryPermission** adds a access rule to the specified directory. By default the access rule added has the following settings:
-        
+
         - FileSystemRights = Modify
         - InheritanceFlags = ContainerInherit,ObjectInherit
         - PropagationFlags = None
