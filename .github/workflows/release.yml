@@ -30,52 +30,15 @@ jobs:
           semver_only: true
       - name: publishmodule.ps1
         shell: pwsh
-        run: |
-          ./build/publishmodule.ps1 -CompanyName "${{ vars.COMPANYNAME }}" -ModuleName "${{ vars.MODULENAME }}" -Tag "${{ steps.get-latest-tag.outputs.tag }}" -PSGalleryKey "${{ secrets.PSGALLERYKEY }}" -GitHubBaseURI "${{ vars.GITHUBBASEURI }}" -TechspaceBaseURI "${{ vars.TECHSPACEBASEURI }}" -ModuleDescription "${{ vars.PSMODULEDESCRIPTION }}" -ModulePSVersion "${{ vars.PSMODULEPOWERSHELLVERSION }}" -ModuleAuthor "${{ vars.MODULEAUTHOR }}" -Copyright "${{ vars.COPYRIGHT }}"
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git add .
-          git commit -m "published new module"
-          git push
-  generateDocs:
-    name: Generate docs
+        run: ./build/publishmodule.ps1 -CompanyName "${{ vars.COMPANYNAME }}" -ModuleName "${{ vars.MODULENAME }}" -Tag "${{ steps.get-latest-tag.outputs.tag }}" -PSGalleryKey "${{ secrets.PSGALLERYKEY }}" -GitHubBaseURI "${{ vars.GITHUBBASEURI }}" -TechspaceBaseURI "${{ vars.TECHSPACEBASEURI }}" -ModuleDescription "${{ vars.PSMODULEDESCRIPTION }}" -ModulePSVersion "${{ vars.PSMODULEPOWERSHELLVERSION }}" -ModuleAuthor "${{ vars.MODULEAUTHOR }}" -Copyright "${{ vars.COPYRIGHT }}"
+  postPublish:
+    name: Create post publish task
+    runs-on: ubuntu-latest
     needs: publish
-    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@main
-      - uses: actions-ecosystem/action-release-label@v1
-        id: release-label
-      - uses: actions-ecosystem/action-get-latest-tag@v1
-        id: get-latest-tag
+      - uses: JasonEtco/create-an-issue@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          semver_only: true
-      - name: generateDocs.ps1
-        shell: pwsh
-        run: |
-          ./build/generateDocs.ps1 -ModuleName "${{ vars.MODULENAME }}" -Tag "${{ steps.get-latest-tag.outputs.tag }}"
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git add .
-          git commit -m "generated new docs"
-          git push
-  merge-branch:
-    name: Merge to main
-    needs: generateDocs
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@main
-      - uses: actions-ecosystem/action-release-label@v1
-        id: release-label
-      - uses: actions-ecosystem/action-get-latest-tag@v1
-        id: get-latest-tag
-        with:
-          semver_only: true
-      - name: Merge develop -> main
-        uses: devmasx/merge-branch@master
-        with:
-          type: now
-          label_name: "${{ steps.get-latest-tag.outputs.tag }}"
-          from_branch: develop
-          target_branch: main
-          message: Merge develop into main
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          filename: .github/post-publish-tasks-issue.md
