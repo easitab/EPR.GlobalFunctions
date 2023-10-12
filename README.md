@@ -8,8 +8,6 @@ This is the repository for the companion PowerShell module for Easit ProcessRunn
 
 [![Release notes](https://github.com/easitab/EPR.GlobalFunctions/actions/workflows/release-drafter.yml/badge.svg)](https://github.com/easitab/EPR.GlobalFunctions/actions/workflows/release-drafter.yml)
 
-[![Publish module](https://github.com/easitab/EPR.GlobalFunctions/actions/workflows/publishmodule.yml/badge.svg?branch=main)](https://github.com/easitab/EPR.GlobalFunctions/actions/workflows/publishmodule.yml)
-
 ## Docs & Introduction
 
 All documentation regarding Easit.PR.GlobalFunctions can be found [here](https://docs.easitgo.com/techspace/psmodules/) and an "intro" to Easit ProcessRunner can be found [here](https://docs.easitgo.com/techspace/easitgo/epr/v1/intro/)

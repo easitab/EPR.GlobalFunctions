@@ -35,10 +35,12 @@ function Set-EPREnvironment {
         Name of modules to import from *[NameOfEPRInstall]/scripts/helpers/customModules*
     .PARAMETER IncludeOldVariableNames
         Specifies if the old variable names should be set in the script scope.
+    .INPUTS
+        None - You cannot pipe objects to this function
     .OUTPUTS
-        This function do not produce any output.
+        This function do not produce any output
     #>
-    [CmdletBinding()]
+    [CmdletBinding(HelpUri = 'https://docs.easitgo.com/techspace/psmodules/eprglobalfunctions/functions/seteprenvironment/')]
     [OutputType()]
     param (
         [Parameter()]
@@ -60,9 +62,9 @@ function Set-EPREnvironment {
             Force = $true
         }
         try {
-            New-Variable -Name 'epr_Directory' -Value (Split-Path -Path (Split-Path -Path $PSScriptRoot) -Parent) @newVarParams
+            New-Variable -Name 'epr_Directory' -Value (Split-Path -Path (Get-Location).Path -Parent) @newVarParams
             New-Variable -Name 'epr_logsDirectory' -Value (Join-Path -Path "$epr_Directory" -ChildPath 'logs') @newVarParams
-            New-Variable -Name 'epr_scriptsDirectory' -Value (Join-Path -Path "$epr_Directory" -ChildPath 'scripts') @newVarParams
+            New-Variable -Name 'epr_scriptsDirectory' -Value ((Get-Location).Path) @newVarParams
             New-Variable -Name 'epr_scriptSettingsDirectory' -Value (Join-Path -Path "$epr_scriptsDirectory" -ChildPath 'scriptSettings') @newVarParams
             New-Variable -Name 'epr_scriptHelpersDirectory' -Value (Join-Path -Path "$epr_scriptsDirectory" -ChildPath 'helpers') @newVarParams
             New-Variable -Name 'epr_modulesDirectory' -Value (Join-Path -Path "$epr_scriptHelpersDirectory" -ChildPath 'modules') @newVarParams
@@ -86,7 +88,7 @@ function Set-EPREnvironment {
         if ($IncludeOldVariableNames) {
             Write-Warning "You are using the old environment setup, please consider moving to the new environment setup!"
             try {
-                New-Variable -Name 'easitPRDirectory' -Value (Split-Path -Path (Split-Path -Path $PSScriptRoot) -Parent) @newVarParams
+                New-Variable -Name 'easitPRDirectory' -Value (Split-Path -Path (Get-Location).Path -Parent) @newVarParams
                 New-Variable -Name 'easitPRlogsDirectory' -Value (Join-Path -Path "$epr_Directory" -ChildPath 'logs') @newVarParams
                 New-Variable -Name 'easitPRscriptsDirectory' -Value (Join-Path -Path "$epr_Directory" -ChildPath 'scripts') @newVarParams
                 New-Variable -Name 'easitPRscriptSettingsDirectory' -Value (Join-Path -Path "$epr_scriptsDirectory" -ChildPath 'scriptSettings') @newVarParams
@@ -104,6 +106,10 @@ function Set-EPREnvironment {
                 throw $_
             }
         }
+        $impModParams = @{
+            Global = $true
+            Force = $true
+        }
         if (!($null -eq $Modules)) {
             if (Test-Path $epr_modulesDirectory) {
                 if ($Modules -ge 1 -and !($Modules -eq 'ALL')) {
@@ -112,7 +118,7 @@ function Set-EPREnvironment {
                         $modulePath = Join-Path $epr_modulesDirectory -ChildPath "$modulName"
                         try {
                             Write-Verbose "Importing $modulePath"
-                            Import-Module "$modulePath"
+                            Import-Module "$modulePath" @impModParams
                         } catch {
                             Write-Warning $_
                         }
@@ -122,7 +128,7 @@ function Set-EPREnvironment {
                     foreach ($module in $modules) {
                         try {
                             Write-Verbose "Importing $module"
-                            Import-Module "$module"
+                            Import-Module "$module" @impModParams
                         } catch {
                             Write-Warning $_
                         }
@@ -142,7 +148,7 @@ function Set-EPREnvironment {
                         $customModulePath = Join-Path $epr_customModulesDirectory -ChildPath "${customModuleName}.psm1"
                         try {
                             Write-Verbose "Importing $customModulePath"
-                            Import-Module "$customModulePath"
+                            Import-Module "$customModulePath" @impModParams
                         } catch {
                             Write-Warning $_
                         }
@@ -152,7 +158,7 @@ function Set-EPREnvironment {
                     foreach ($customModule in $CustomModules) {
                         try {
                             Write-Verbose "Importing $customModule"
-                            Import-Module "$customModule"
+                            Import-Module "$customModule" @impModParams
                         } catch {
                             Write-Warning $_
                         }
