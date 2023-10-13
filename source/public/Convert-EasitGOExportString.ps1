@@ -8,20 +8,27 @@ function Convert-EasitGOExportString {
 
         By using *ConvertFrom-Json* the string is converted to a PSCustomObject.
 
-        If -Raw is used, the object is returned.
-        If -Raw is NOT used, *[New-FlatReturnObject](https://docs.easitgo.com/techspace/psmodules/eprglobalfunctions/functions/newflatreturnobject/)* is called to "flatten" the object.
+        If -Raw is used, the object is returned non "flattened".
+        If -Full is used, the whole export payload is returned, non "flattened".
+        If -Raw AND -Full is NOT used, *[New-FlatReturnObject](https://docs.easitgo.com/techspace/psmodules/eprglobalfunctions/functions/newflatreturnobject/)* is called to "flatten" the object.
     .EXAMPLE
         Convert-EasitGOExportString -InputString $Base64StringFromStdIn
     .EXAMPLE
         Convert-EasitGOExportString -InputString $Base64StringFromStdIn -Raw
     .EXAMPLE
+        Convert-EasitGOExportString -InputString $Base64StringFromStdIn -Full
+    .EXAMPLE
         Convert-EasitGOExportString -InputString $jsonString
     .EXAMPLE
         Convert-EasitGOExportString -InputString $jsonString -Raw
+    .EXAMPLE
+        Convert-EasitGOExportString -InputString $jsonString -Full
     .PARAMETER InputString
         String to convert to a PSCustomObject
     .PARAMETER Raw
         Specifies if the PSCustomObject should be "flatten" before returned
+    .PARAMETER Full
+        Specifies if the whole export body (including importhandler and generic properties) should be returned as a PSCustomObject. This parameter overrides -Raw
     .INPUTS
         None - You cannot pipe objects to this function
     .OUTPUTS
@@ -33,7 +40,9 @@ function Convert-EasitGOExportString {
         [Parameter(Mandatory)]
         [String]$InputString,
         [Parameter()]
-        [Switch]$Raw
+        [Switch]$Raw,
+        [Parameter()]
+        [Switch]$Full
     )
     begin {
         Write-Verbose "$($MyInvocation.MyCommand) begin"
@@ -58,6 +67,8 @@ function Convert-EasitGOExportString {
             throw $_
         }
         if ($Raw) {
+            return $rawEasitGOObject.itemToImport[0]
+        } elseif ($Full) {
             return $rawEasitGOObject
         } else {
             try {

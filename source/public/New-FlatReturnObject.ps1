@@ -13,6 +13,7 @@ function New-FlatReturnObject {
         * DatabaseId
         * PropertyObjects
         * propertyName_rawValue (one for each property)
+        * Attachments
 
         If a property occurs more than one time, the property value will be an array of all values with that name.
     .EXAMPLE

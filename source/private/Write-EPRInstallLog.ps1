@@ -45,7 +45,7 @@ function Write-EPRInstallLog {
     begin {
         Write-Verbose "$($MyInvocation.MyCommand) begin"
         if ($PSCmdlet.MyInvocation.MyCommand.Name -ne 'New-EPRInstallation') {
-            Write-Warning "This function should only be used (by 'New-EPRInstallation') when installing a new instance of ProcessRunner. Please use 'Easit.GO.Webservice' for posting data to Easit GO."
+            Write-Warning "This function should only be used when installing a new instance of ProcessRunner."
         }
     }
     process {
