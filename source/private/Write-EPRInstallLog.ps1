@@ -44,11 +44,11 @@ function Write-EPRInstallLog {
     )
     begin {
         Write-Verbose "$($MyInvocation.MyCommand) begin"
-        if ($PSCmdlet.MyInvocation.MyCommand.Name -ne 'New-EPRInstallation') {
-            Write-Warning "This function should only be used when installing a new instance of ProcessRunner."
-        }
     }
     process {
+        if ($((Get-PSCallStack)[1].Command) -ne 'New-EPRInstallation') {
+            Write-Warning "This function should only be used (by 'New-EPRInstallation') when installing a new instance of ProcessRunner. Please use 'Easit.GO.Webservice' for posting data to Easit GO."
+        }
         $FormattedDate = Get-Date -Format "yyyy-MM-dd HH:mm:ss.fff"
         $today = Get-Date -Format "yyyyMMdd"
         $LogName = "${LogName}_${today}.log"
