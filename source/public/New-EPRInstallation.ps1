@@ -57,6 +57,10 @@ function New-EPRInstallation {
         [Switch]$DoNotSendInstallationDetailsToEasit
     )
     begin {
+        $Elevated = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+		if ( -not $Elevated ) {
+		  throw "In order to install Easit Process Runner correctly, this session requires elevation (i.e open PowerShell as admin)."
+		}
         $InformationPreference = 'Continue'
         $script:ProgressPreference = 'SilentlyContinue'
         $startingDirectory = Get-Location
@@ -84,7 +88,6 @@ function New-EPRInstallation {
         if (Test-Path -Path $installPackagePath) {
             $script:loggingParameters = @{
                 LogDirectory = "$installPackagePath"
-                LogLevel = 'INFO'
             }
             Set-Location $installPackagePath
             Write-EPRInstallLog -Message "-- Installation start --" @loggingParameters

@@ -49,11 +49,11 @@ function New-PostBody {
     )
     begin {
         Write-Verbose "$($MyInvocation.MyCommand) begin"
-        if ($PSCmdlet.MyInvocation.MyCommand.Name -ne 'New-EPRInstallation') {
-            Write-Warning "This function should only be used when installing a new instance of ProcessRunner. Please use 'Easit.GO.Webservice' for posting data to Easit GO."
-        }
     }
     process {
+        if ($((Get-PSCallStack)[1].Command) -ne 'New-EPRInstallation') {
+            Write-Warning "This function should only be used (by 'New-EPRInstallation') when installing a new instance of ProcessRunner. Please use 'Easit.GO.Webservice' for posting data to Easit GO."
+        }
         $items = @()
         $propertiesArray = @()
         foreach ($prop in $InstallerSettings.FeedbackSettings.postBody.properties) {
