@@ -123,7 +123,7 @@ function Write-CustomLog {
         }
         if ([string]::IsNullOrWhiteSpace("$RotationInterval")) {
             if (!([string]::IsNullOrWhiteSpace("$($globalLoggerSettings.RotationInterval)"))) {
-                $LogDirectory = $globalLoggerSettings.RotationInterval
+                $RotationInterval = $globalLoggerSettings.RotationInterval
             } else {
                 $RotationInterval = 30
             }
